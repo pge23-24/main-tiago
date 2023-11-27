@@ -1,4 +1,13 @@
+# elements généré
 devel/
 build/
 logs/
+
+# packages pal robotic
 src/
+
+# fichiers de configuration
+.catkin_tools/
+
+# ide
+.vscode/
