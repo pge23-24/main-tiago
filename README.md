@@ -68,6 +68,7 @@ pre-commit install
       sudo apt-get install ros-noetic-urdf-geometry-parser
       sudo apt-get install ros-noetic-ddynamic-reconfigure
       sudo apt-get install ros-noetic-people
+      sudo apt-get install ros-noetic-twist-mux
       ```
 
 ## Connexion
