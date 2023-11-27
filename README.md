@@ -71,33 +71,40 @@ pre-commit install
       ```
 
 ## Connexion
-### Etape 1
+### Méthode 1
+Utiliser la commande suivante dans le workspace :
+```
+source connect_to_robot.bash
+```
+
+### Méthode 2
+#### Etape 1
 Se déplacer dans le workspace d'intérêt <ros_ws> :
 ```
 cd <ros_ws>
 ```
 
-### Etape 2
+#### Etape 2
 Dans le workspace, mettre à jour les paquets :
 ```
 source /opt/ros/noetic/setup.bash
 source devel/setup.bash
 ```
 
-### Etape 3
+#### Etape 3
 Se connecter au réseau Wi-Fi émis par le robot TiaGo :
 ```
 SSID : PMB2-46c
 PWD  : P@L-R0b0t1cs
 ```
 
-### Etape 4
+#### Etape 4
 Récupérer l'adresse IP du PC sur le nouveau réseau :
 ```
 ip address
 ```
 
-### Etape 5
+#### Etape 5
 Mettre à jour les variables d'environnement :
 ```
 export ROS_MASTER_URI=http://10.0.68.1:11311
