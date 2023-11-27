@@ -57,8 +57,18 @@ pre-commit install
 # Procédure de connexion au robot Tiago
 ## Dépendances
 - Ubuntu 20
-- ROS Noetic
-- PAL packages (?)
+- ROS Noetic : http://wiki.ros.org/noetic/Installation/Ubuntu
+- PAL packages :
+    - Suivre ce tutoriel : http://wiki.ros.org/Robots/TIAGo/Tutorials/Installation/InstallUbuntuAndROS
+    - Avant la dernière commande de l'étape 3, exécuter ces lignes :
+      ```
+      sudo apt-get install ros-noetic-navigation
+      sudo apt-get install ros-noetic-map-server
+      sudo apt-get install ros-noetic-four-wheel-steering-controller
+      sudo apt-get install ros-noetic-urdf-geometry-parser
+      sudo apt-get install ros-noetic-ddynamic-reconfigure
+      sudo apt-get install ros-noetic-people
+      ```
 
 ## Connexion
 ### Etape 1
@@ -90,6 +100,6 @@ ip address
 ### Etape 5
 Mettre à jour les variables d'environnement :
 ```
-export ROS_MASTER_URI=http://<robot_ip>:11311
+export ROS_MASTER_URI=http://10.0.68.1:11311
 export ROS_IP=<pc_ip>
 ```
