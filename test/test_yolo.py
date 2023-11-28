@@ -4,7 +4,7 @@ from src.yolo import yolo
 
 class TestYolo(unittest.TestCase):
 
-    @patch('your_module.YOLO')  # Mock the YOLO class
+    @patch('src.YOLO')  # Mock the YOLO class
     def setUp(self, mock_yolo):
         # Setup a mock for YOLO model
         self.mock_model = Mock()
