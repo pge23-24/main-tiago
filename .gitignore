@@ -37,6 +37,7 @@
 # Models
 *.ckpt
 *.pth
+*.pt
 
 # Pycache
 *.pyc

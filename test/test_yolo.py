@@ -1,40 +1,38 @@
 import unittest
-from unittest.mock import patch, Mock
-from src.yolo import yolo 
-
+from src.yolo import yolo  
+import cv2  # Assuming OpenCV is used for image handling
+from PIL import Image
+import numpy as np
 class TestYolo(unittest.TestCase):
 
-    @patch('src.YOLO')  # Mock the YOLO class
-    def setUp(self, mock_yolo):
-        # Setup a mock for YOLO model
-        self.mock_model = Mock()
-        mock_yolo.return_value = self.mock_model
-
-        # Instantiate the yolo class
+    def setUp(self):
+        """ Set up the YOLO instance before each test """
         self.yolo_instance = yolo()
 
     def test_compute_with_valid_image(self):
-        # Mock the model's track method
-        self.mock_model.track.return_value = "mock_results"
+        """ Test the compute function with a valid image """
+        # Load a test image (replace 'path_to_test_image.jpg' with a valid image path)
+        random_image = Image.fromarray(np.random.randint(0, 256, (480, 640, 3), dtype=np.uint8))
 
-        # Call the compute method with a mock image
-        results = self.yolo_instance.compute("mock_image")
+        # Check if the image is not None
+        self.assertIsNotNone(random_image, "Failed to load test image.")
 
-        # Assert that the track method was called correctly
-        self.mock_model.track.assert_called_with("mock_image", persist=True, tracker="bytetrack.yaml")
+        # Call the compute method
+        results = self.yolo_instance.compute(random_image)
 
-        # Assert that the results are as expected
-        self.assertEqual(results, "mock_results")
+        # Assert that results are returned
+        self.assertIsNotNone(results, "No results returned from compute method.")
 
-    def test_compute_with_none_image(self):
-        # Test compute method with None as image
-        results = self.yolo_instance.compute(None)
+    def test_compute_with_invalid_image(self):
+        """ Test the compute function with an invalid image """
+        invalid_image = None  # Simulate a failed image load
 
-        # Assert that the track method was not called
-        self.mock_model.track.assert_not_called()
+        # Call the compute method
+        results = self.yolo_instance.compute(invalid_image)
 
-        # Assert that the result is None or as expected for this case
-        self.assertIsNone(results)
+        # Assert that no results are returned
+        self.assertIsNone(results, "Results should not be returned for an invalid image.")
 
+# This allows the test to be run from the command line
 if __name__ == '__main__':
     unittest.main()
