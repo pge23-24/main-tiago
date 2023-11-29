@@ -4,8 +4,8 @@ import socket
 import time
 
 # Import your Receiver and Sender classes
-from src.receiver import Receiver
-from src.sender import Sender
+from src.communication.receiver import Receiver
+from src.communication.sender import Sender
 
 
 class TestNetworkOperations(unittest.TestCase):
