@@ -11,18 +11,20 @@ import sys
 
 class YOLODetector:
     def __init__(self):
-        self.model = YOLO("yolov8s-pose.pt")  # Initialize the YOLO model
+        self.model = YOLO("yolov8s-pose.pt")
 
     def compute(self, image):
-        # Run YOLOv8 tracking on the image if it's valid
         if image is not None:
             results = self.model.track(image, persist=True, tracker="bytetrack.yaml")
             return results
 
 
-class MinimalSubscriber(Node):
-    def __init__(self, camera_id="1"):
-        super().__init__("minimal_subscriber")
+class MinimalPublisher(Node):
+    def __init__(self, camera_id):
+        super().__init__("minimal_publisher")
+        self.camera_id = camera_id
+        self.topic_name = f"annotated_images_{camera_id}"
+        self.publisher = self.create_publisher(Image, self.topic_name, 10)
         self.subscription = self.create_subscription(
             Image, f"Cam{camera_id}/image_raw", self.listener_callback, 10
         )
@@ -30,7 +32,7 @@ class MinimalSubscriber(Node):
         self.detector = YOLODetector()
 
     def listener_callback(self, image):
-        self.get_logger().info("Image received")
+        self.get_logger().info(f"Image received from Camera {self.camera_id}")
         cv_image = cv2.cvtColor(
             self._cv_bridge.imgmsg_to_cv2(image, desired_encoding="passthrough"),
             cv2.COLOR_BGR2RGB,
@@ -39,25 +41,29 @@ class MinimalSubscriber(Node):
         results = self.detector.compute(cv_image)
         if results:
             annotated_image = results[0].plot()
-            # Add code to display or process the annotated image
+            msg = self._cv_bridge.cv2_to_imgmsg(annotated_image, "rgb8")
+            self.publisher.publish(msg)
 
 
 def main(args=None):
-    # Separate ROS arguments from script arguments
-    ros_args = remove_ros_args(sys.argv)
+    # Initialize ROS without passing args
+    rclpy.init()
 
-    rclpy.init(args=ros_args)
-
+    # Create an argument parser for your script
     parser = argparse.ArgumentParser(description="ROS 2 YOLO Object Detection Node")
+
+    # Add your custom argument
     parser.add_argument("--cam", type=str, default="1", help="Camera identifier")
 
-    # Use parse_known_args to avoid error with unrecognized arguments
-    custom_args, unknown_args = parser.parse_known_args(args=remove_ros_args(sys.argv))
+    # Parse the command line arguments
+    custom_args = parser.parse_args()
 
-    minimal_subscriber = MinimalSubscriber(custom_args.cam)
-    rclpy.spin(minimal_subscriber)
+    # Create and spin your node
+    minimal_publisher = MinimalPublisher(custom_args.cam)
+    rclpy.spin(minimal_publisher)
 
-    minimal_subscriber.destroy_node()
+    # Shutdown and cleanup
+    minimal_publisher.destroy_node()
     rclpy.shutdown()
 
 
