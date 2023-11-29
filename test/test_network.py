@@ -4,12 +4,11 @@ import socket
 import time
 
 # Import your Receiver and Sender classes
-from src.communication.receiver import Receiver
-from src.communication.sender import Sender
+from src.communication.network.receiver import Receiver
+from src.communication.network.sender import Sender
 
 
 class TestNetworkOperations(unittest.TestCase):
-
     def setUp(self):
         # Setup for each test
         self.host = "127.0.0.1"
@@ -56,5 +55,5 @@ class TestNetworkOperations(unittest.TestCase):
         # Note: The server thread will close when the test exits, as it's a daemon thread
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
