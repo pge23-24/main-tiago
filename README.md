@@ -29,7 +29,7 @@ Lancer le script d'installation :
 source install.bash
 ```
 
-Attention, l'installation peut être longue...
+Attention, l'installation peut être longue (jusqu'à 40 minutes si vous n'avez rien du tout d'installé sur votre machine, dont plus de 20 minutes juste pour le build du workspace).
 
 ## GIT ET L'INTEGRATION CONTINUE
 
