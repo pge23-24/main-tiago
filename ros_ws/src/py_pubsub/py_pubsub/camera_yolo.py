@@ -16,9 +16,21 @@ class YOLODetector:
 
     def compute(self, image):
         if image is not None:
-            results = self.model.track(
-                image, persist=True, tracker="bytetrack.yaml")
+            results = self.model.track(image, persist=True, tracker="bytetrack.yaml")
             return results
+
+
+class MinimalPublisher(Node):
+    def __init__(self, camera_id):
+        super().__init__("minimal_publisher")
+        self.camera_id = camera_id
+        self.topic_name = f"annotated_images_{camera_id}"
+        self.publisher = self.create_publisher(Image, self.topic_name, 10)
+        self.subscription = self.create_subscription(
+            Image, f"Cam{camera_id}/image_raw", self.listener_callback, 10
+        )
+        self._cv_bridge = CvBridge()
+        self.detector = YOLODetector()
 
     def toData(self, result, keypoint=False):
         """Convert the object to JSON format."""
@@ -45,8 +57,7 @@ class YOLODetector:
             if result.masks:
                 # numpy array
                 x, y = result.masks.xy[i][:, 0], result.masks.xy[i][:, 1]
-                results["segments"] = {
-                    "x": (x / w).tolist(), "y": (y / h).tolist()}
+                results["segments"] = {"x": (x / w).tolist(), "y": (y / h).tolist()}
             if keypoint:
                 x, y, visible = (
                     result.keypoints[i].data[0].cpu().unbind(dim=1)
@@ -61,24 +72,10 @@ class YOLODetector:
         # Convert detections to JSON
         return resultat
 
-
-class MinimalPublisher(Node):
-    def __init__(self, camera_id):
-        super().__init__("minimal_publisher")
-        self.camera_id = camera_id
-        self.topic_name = f"annotated_images_{camera_id}"
-        self.publisher = self.create_publisher(Image, self.topic_name, 10)
-        self.subscription = self.create_subscription(
-            Image, f"Cam{camera_id}/image_raw", self.listener_callback, 10
-        )
-        self._cv_bridge = CvBridge()
-        self.detector = YOLODetector()
-
     def listener_callback(self, image):
         self.get_logger().info(f"Image received from Camera {self.camera_id}")
         cv_image = cv2.cvtColor(
-            self._cv_bridge.imgmsg_to_cv2(
-                image, desired_encoding="passthrough"),
+            self._cv_bridge.imgmsg_to_cv2(image, desired_encoding="passthrough"),
             cv2.COLOR_BGR2RGB,
         )
 
@@ -94,12 +91,10 @@ def main(args=None):
     rclpy.init()
 
     # Create an argument parser for your script
-    parser = argparse.ArgumentParser(
-        description="ROS 2 YOLO Object Detection Node")
+    parser = argparse.ArgumentParser(description="ROS 2 YOLO Object Detection Node")
 
     # Add your custom argument
-    parser.add_argument("--cam", type=str, default="1",
-                        help="Camera identifier")
+    parser.add_argument("--cam", type=str, default="1", help="Camera identifier")
 
     # Parse the command line arguments
     custom_args = parser.parse_args()
