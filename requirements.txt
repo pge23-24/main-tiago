@@ -1,3 +1,6 @@
 ultralytics
 opencv-python
 pillow
+pywavefront
+transformers
+accelerate
