@@ -1,10 +1,59 @@
-# elements généré
+# elements générés
 devel/
 build/
 logs/
 
 # packages pal robotic
-src/
+src/aruco_ros                    
+src/pal_statistics
+src/backward_ros                 
+src/pal_urdf_utils
+src/custom_end_effector          
+src/pal_wsg_gripper
+src/ddynamic_reconfigure_python  
+src/play_motion
+src/dynamic_introspection        
+src/pmb2_navigation
+src/eband_local_planner          
+src/pmb2_robot
+src/gazebo_ros_pkgs              
+src/pmb2_simulation
+src/head_action                  
+src/roboticsgroup_gazebo_plugins
+src/hey5_description             
+src/robot_pose
+src/humanoid_msgs                
+src/ros_control
+src/navigation_layers            
+src/ros_controllers
+src/omni_base_navigation         
+src/rviz_plugin_covariance
+src/omni_base_robot              
+src/omni_base_simulation         
+src/openslam_gmapping            
+src/pal_gazebo_plugins           
+src/simple_grasping_action
+src/pal_gazebo_worlds            
+src/simple_models_robot
+src/pal_gripper                  
+src/slam_gmapping
+src/pal_hardware_gazebo          
+src/teleop_tools
+src/pal_hardware_interfaces      
+src/tf_lookup
+src/pal_motion_loader            
+src/tiago_description_calibration
+src/pal_msgs                     
+src/tiago_moveit_config
+src/pal_navigation_cfg_public    
+src/tiago_navigation
+src/pal_navigation_sm            
+src/tiago_robot
+src/pal_python                   
+src/tiago_simulation
+src/pal_robotiq_gripper          
+src/tiago_tutorials
+
 
 # fichiers de configuration
 .catkin_tools/
