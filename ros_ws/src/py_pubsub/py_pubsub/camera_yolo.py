@@ -5,6 +5,7 @@ from cv_bridge import CvBridge
 import cv2
 import argparse
 from ultralytics import YOLO  # YOLOv8 import
+from ultralytics.utils import LOGGER  # LOGGER import
 from rclpy.utilities import remove_ros_args
 import sys
 
@@ -15,8 +16,50 @@ class YOLODetector:
 
     def compute(self, image):
         if image is not None:
-            results = self.model.track(image, persist=True, tracker="bytetrack.yaml")
+            results = self.model.track(
+                image, persist=True, tracker="bytetrack.yaml")
             return results
+
+    def toData(self, result, keypoint=False):
+        """Convert the object to JSON format."""
+        if result.probs is not None:
+            LOGGER.warning("Warning: Classify task do not support tojson yet.")
+            return
+
+        # Create list of detection dictionaries
+        resultat = []
+        data = result.boxes.data.cpu().tolist()
+        h, w = (1, 1)
+        for i, row in enumerate(data):  # xyxy, track_id if tracking, conf, class_id
+            box = {
+                "x1": row[0] / w,
+                "y1": row[1] / h,
+                "x2": row[2] / w,
+                "y2": row[3] / h,
+            }
+            class_id = int(row[-1])
+            name = result.names[class_id]
+            results = {"name": name, "box": box}
+            if result.boxes.is_track:
+                results["track_id"] = int(row[-3])  # track ID
+            if result.masks:
+                # numpy array
+                x, y = result.masks.xy[i][:, 0], result.masks.xy[i][:, 1]
+                results["segments"] = {
+                    "x": (x / w).tolist(), "y": (y / h).tolist()}
+            if keypoint:
+                x, y, visible = (
+                    result.keypoints[i].data[0].cpu().unbind(dim=1)
+                )  # torch Tensor
+                results["keypoints"] = {
+                    "x": (x / w).tolist(),
+                    "y": (y / h).tolist(),
+                    "visible": visible.tolist(),
+                }
+            resultat.append(results)
+
+        # Convert detections to JSON
+        return resultat
 
 
 class MinimalPublisher(Node):
@@ -34,7 +77,8 @@ class MinimalPublisher(Node):
     def listener_callback(self, image):
         self.get_logger().info(f"Image received from Camera {self.camera_id}")
         cv_image = cv2.cvtColor(
-            self._cv_bridge.imgmsg_to_cv2(image, desired_encoding="passthrough"),
+            self._cv_bridge.imgmsg_to_cv2(
+                image, desired_encoding="passthrough"),
             cv2.COLOR_BGR2RGB,
         )
 
@@ -50,10 +94,12 @@ def main(args=None):
     rclpy.init()
 
     # Create an argument parser for your script
-    parser = argparse.ArgumentParser(description="ROS 2 YOLO Object Detection Node")
+    parser = argparse.ArgumentParser(
+        description="ROS 2 YOLO Object Detection Node")
 
     # Add your custom argument
-    parser.add_argument("--cam", type=str, default="1", help="Camera identifier")
+    parser.add_argument("--cam", type=str, default="1",
+                        help="Camera identifier")
 
     # Parse the command line arguments
     custom_args = parser.parse_args()
