@@ -53,7 +53,10 @@ src/pal_python
 src/tiago_simulation
 src/pal_robotiq_gripper          
 src/tiago_tutorials
-
+src/.rosinstall
+src/setup.bash
+src/setup.sh
+src/setup.zsh
 
 # fichiers de configuration
 .catkin_tools/
