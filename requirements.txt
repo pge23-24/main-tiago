@@ -4,3 +4,4 @@ pillow
 pywavefront
 transformers
 accelerate
+numpy
