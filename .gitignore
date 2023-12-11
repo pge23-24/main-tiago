@@ -47,3 +47,9 @@
 
 # COCO dataset
 COCO_2017/
+
+# Surround dataset
+*/DATA*
+
+# ZIP fodlers
+*.zip
