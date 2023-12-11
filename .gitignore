@@ -47,6 +47,7 @@
 
 # COCO dataset
 COCO_2017/
+COCO2017/
 
 # Surround dataset
 */DATA*
