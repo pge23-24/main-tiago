@@ -25,14 +25,7 @@ class YOLOv5Detector:
                 end_time = time.time()
                 processing_times.append(end_time - start_time)
 
-        if not processing_times:
-            return np.nan, np.nan, [np.nan, np.nan]
-
-        return (
-            np.mean(processing_times),
-            np.median(processing_times),
-            np.percentile(processing_times, [25, 75]),
-        )
+        return processing_times
 
     def process_image(self, image_path):
         """Process a single image"""
@@ -45,8 +38,17 @@ if __name__ == "__main__":
     # Define the models to iterate over
     models = ["yolov5n", "yolov5s", "yolov5m", "yolov5l", "yolov5x"]
 
-    # Define the folder containing images
-    folder_path = "assets/COCO2017"  # Replace with your folder path
+    # Define the folders containing images
+    folders = [
+        "assets/DATA/CAMERA_1",
+        "assets/DATA/CAMERA_2",
+        "assets/DATA/CAMERA_3",
+        "assets/DATA/CAMERA_4",
+        "assets/DATA_2/CAMERA_1",
+        "assets/DATA_2/CAMERA_2",
+        "assets/DATA_2/CAMERA_3",
+        "assets/DATA_2/CAMERA_4",
+    ]
 
     # Initialize a DataFrame to store the results
     results_df = pd.DataFrame(
@@ -61,10 +63,18 @@ if __name__ == "__main__":
 
     # Iterate over each model and process images
     for model in models:
+        all_times = []
         detector = YOLOv5Detector(model)
-        mean_time, median_time, quartiles = detector.process_images_from_folder(
-            folder_path
-        )
+        for folder in folders:
+            all_times.extend(detector.process_images_from_folder(folder))
+
+        if not all_times:
+            continue
+
+        mean_time = np.mean(all_times)
+        median_time = np.median(all_times)
+        quartiles = np.percentile(all_times, [25, 75])
+
         results_df = results_df.append(
             {
                 "Model": model,
