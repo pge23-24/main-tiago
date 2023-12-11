@@ -4,6 +4,8 @@
 #include "nav_msgs/GetMap.h"
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_msgs/PointCloud.h"
+#include "sensor_msgs/PointCloud2.h"
+#include "sensor_msgs/point_cloud_conversion.h"
 #include "tf/transform_listener.h"
 #include "tf/message_filter.h"
 #include "message_filters/subscriber.h"
@@ -48,7 +50,7 @@ public:
         }
 
         // publish to the /filtered_scan
-        filtered_scan_ = n_.advertise<sensor_msgs::PointCloud>("/scan_filtered", 10);
+        filtered_scan_ = n_.advertise<sensor_msgs::PointCloud2>("/scan_filtered", 10);
 
         // subscribe to the /scan topic
         scan_sub_.subscribe(n_, "/scan", 10);
@@ -61,6 +63,7 @@ public:
     {
         sensor_msgs::PointCloud cloud;
         sensor_msgs::PointCloud filtered_cloud;
+        sensor_msgs::PointCloud2 out_cloud;
 
         try
         {
@@ -91,8 +94,11 @@ public:
             }
         }
 
+        // converts PointCloud to PointCloud2
+        sensor_msgs::convertPointCloudToPointCloud2(filtered_cloud, out_cloud);
+
         // publish the filtered points
-        filtered_scan_.publish(filtered_cloud);
+        filtered_scan_.publish(out_cloud);
     }
 };
 

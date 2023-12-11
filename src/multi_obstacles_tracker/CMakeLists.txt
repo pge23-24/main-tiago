@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   laser_geometry
   message_filters
+  pcl_ros
+  pcl_conversions
 )
 
 ###################################
