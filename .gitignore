@@ -44,3 +44,6 @@
 
 # Log folder
 *log*
+
+# COCO dataset
+COCO_2017/
