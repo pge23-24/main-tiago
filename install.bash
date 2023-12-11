@@ -68,21 +68,21 @@ rosdep install -y --from-paths src --ignore-src --rosdistro noetic --skip-keys "
 
 echo -e "${BLUE}Installation des packages suplémentaires...${NC}"
 
-sudo apt-get install -y ros-noetic-navigation \
-                        ros-noetic-map-server \
-                        ros-noetic-four-wheel-steering-controller \
-                        ros-noetic-urdf-geometry-parser \
-                        ros-noetic-ddynamic-reconfigure \
-                        ros-noetic-people \
-                        ros-noetic-control-toolbox \
-                        ros-noetic-polled-camera \
-                        ros-noetic-camera-info-manager \
-                        ros-noetic-xacro \
-                        ros-noetic-tf-conversions \
-                        ros-noetic-robot \
-                        ros-noetic-moveit \
-                        ros-noetic-moveit \
-                        ros-noetic-pcl-ros
+#sudo apt-get install -y ros-noetic-navigation \
+#                        ros-noetic-map-server \
+#                        ros-noetic-four-wheel-steering-controller \
+#                        ros-noetic-urdf-geometry-parser \
+#                        ros-noetic-ddynamic-reconfigure \
+#                        ros-noetic-people \
+#                        ros-noetic-control-toolbox \
+#                        ros-noetic-polled-camera \
+#                        ros-noetic-camera-info-manager \
+#                        ros-noetic-xacro \
+#                        ros-noetic-tf-conversions \
+#                        ros-noetic-robot \
+#                        ros-noetic-moveit \
+#                       ros-noetic-moveit \
+#                       ros-noetic-pcl-ros
 
 
 echo -e "${BLUE}Installation de pre-commit...${NC}"
