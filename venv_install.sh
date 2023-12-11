@@ -15,6 +15,9 @@ fi
 # Activate the virtual environment
 source $VENV_DIR/bin/activate
 
+# Upgrade pip
+pip install --upgrade pip
+
 # Check if requirements.txt exists
 if [ -f "requirements.txt" ]; then
     # Install requirements
