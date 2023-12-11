@@ -26,7 +26,14 @@ class YOLOv8Detector:
                 end_time = time.time()
                 processing_times.append(end_time - start_time)
 
-        return processing_times
+        if not processing_times:
+            return np.nan, np.nan, [np.nan, np.nan]
+
+        return (
+            np.mean(processing_times),
+            np.median(processing_times),
+            np.percentile(processing_times, [25, 75]),
+        )
 
     def process_image(self, image_path):
         """Process a single image"""
@@ -36,7 +43,7 @@ class YOLOv8Detector:
 
 
 if __name__ == "__main__":
-    # Define the models to iterate over (assuming YOLOv8 has similar variants)
+    # Define the models to iterate over
     models = ["yolov8s.pt", "yolov8m.pt", "yolov8l.pt", "yolov8x.pt"]
 
     # Define the folders containing images
@@ -62,30 +69,31 @@ if __name__ == "__main__":
         ]
     )
 
-    # Iterate over each model and process images
+    # Iterate over each model and process images from all folders
     for model in models:
-        all_times = []
         detector = YOLOv8Detector(model)
+        all_times = []
         for folder in folders:
-            all_times.extend(detector.process_images_from_folder(folder))
+            mean_time, median_time, quartiles = detector.process_images_from_folder(
+                folder
+            )
+            all_times.extend(quartiles)  # Extend the list with quartile times
 
-        if not all_times:
-            continue
-
-        mean_time = np.mean(all_times)
-        median_time = np.median(all_times)
-        quartiles = np.percentile(all_times, [25, 75])
+        # Compute overall statistics across all folders
+        overall_mean = np.mean(all_times)
+        overall_median = np.median(all_times)
+        overall_quartiles = np.percentile(all_times, [25, 75])
 
         results_df = results_df.append(
             {
                 "Model": model,
-                "Mean Time": mean_time,
-                "Median Time": median_time,
-                "25th Percentile": quartiles[0],
-                "75th Percentile": quartiles[1],
+                "Mean Time": overall_mean,
+                "Median Time": overall_median,
+                "25th Percentile": overall_quartiles[0],
+                "75th Percentile": overall_quartiles[1],
             },
             ignore_index=True,
         )
 
     # Save results to CSV
-    results_df.to_csv("yolov8_timing_statistics.csv", index=False)
+    results_df.to_csv("yolov5_timing_statistics_overall.csv", index=False)
