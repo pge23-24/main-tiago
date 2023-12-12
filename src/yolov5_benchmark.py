@@ -56,7 +56,6 @@ if __name__ == "__main__":
         "assets/DATA_2/CAMERA_3",
         "assets/DATA_2/CAMERA_4",
     ]
-
     # Initialize a DataFrame to store the results
     results_df = pd.DataFrame(
         columns=[
@@ -67,6 +66,9 @@ if __name__ == "__main__":
             "75th Percentile",
         ]
     )
+
+    # Initialize a list to store dictionaries
+    results_list = []
 
     # Iterate over each model and process images from all folders
     for model in models:
@@ -83,16 +85,19 @@ if __name__ == "__main__":
         overall_median = np.median(all_times)
         overall_quartiles = np.percentile(all_times, [25, 75])
 
-        results_df = results_df.append(
+        # Append dictionary to the list
+        results_list.append(
             {
                 "Model": model,
                 "Mean Time": overall_mean,
                 "Median Time": overall_median,
                 "25th Percentile": overall_quartiles[0],
                 "75th Percentile": overall_quartiles[1],
-            },
-            ignore_index=True,
+            }
         )
+
+    # Concatenate the list of dictionaries to form a DataFrame
+    results_df = pd.concat([results_df, pd.DataFrame(results_list)], ignore_index=True)
 
     # Save results to CSV
     results_df.to_csv("yolov5_timing_statistics_overall.csv", index=False)
