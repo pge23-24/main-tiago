@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <node name="scan_filter" pkg="multi_obstacles_tracker" type="scan_filter" output="screen"></node>
+
+  <node name="obstacles_clustering" pkg="multi_obstacles_tracker" type="obstacles_clustering" output="screen"></node>
+
+  <node name="cluster_viz" pkg="multi_obstacles_tracker" type="cluster_viz" output="screen"></node>
+
+</launch>
