@@ -2,23 +2,10 @@
 
 1. Install docker
 
+Run the following command then restart computer (code viewable [here](https://gist.github.com/Guillaume-prog/e9551041f0637e4452c93c98dd96f85b))
+
 ```bash
-apt remove -y docker docker-engine docker.io containerd runc
-
-apt update
-apt install -y ca-certificates curl gnupg
-
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-apt update
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+curl -s https://gist.githubusercontent.com/Guillaume-prog/e9551041f0637e4452c93c98dd96f85b/raw/docker-install.bash?_=$(uuidgen) \ | sudo bash
 ```
 
 2. Download the docker image
@@ -35,9 +22,9 @@ To run the docker :
 ./setup/run-docker.bash
 ```
 
-To connect to the robot : 
-```bash
-./setup/connect_to_robot.bash
-```
+# Aliases
 
-# Windows setup
+- `tiago-connect`: connects container to robot network and sets necessary env variables
+- `tiago-disconnect`: resets env variables. You are not disconnected from the robot's network
+- `rviz`: runs an empty rviz window
+- `gazebo`: runs gazebo simulation. Automatically disconnects from robot to avoid issues
