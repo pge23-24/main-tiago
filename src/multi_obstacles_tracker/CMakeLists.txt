@@ -37,7 +37,9 @@ include_directories(
 ## Declare a C++ executable
 add_executable(scan_filter src/scan_filter.cpp)
 add_executable(obstacles_clustering src/obstacles_clustering.cpp)
+add_executable(cluster_viz src/cluster_viz.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(scan_filter ${catkin_LIBRARIES})
 target_link_libraries(obstacles_clustering ${catkin_LIBRARIES})
+target_link_libraries(cluster_viz ${catkin_LIBRARIES})
