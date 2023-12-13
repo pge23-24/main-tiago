@@ -8,14 +8,20 @@ project(multi_obstacles_tracker)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+
   std_msgs
   nav_msgs
   sensor_msgs
+  visualization_msgs
   multi_obstacles_tracker_msgs
-  tf
   geometry_msgs
+  
+  tf
+  
   laser_geometry
+
   message_filters
+
   pcl_ros
   pcl_conversions
 )
