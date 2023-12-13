@@ -20,7 +20,7 @@
 #include <sstream>
 
 
-class ObstaclesClustering
+class ObstaclesCluster
 {
 public:
     // ROS variables
@@ -33,13 +33,13 @@ public:
     ros::Subscriber cloud_sub_;
     
 
-    ObstaclesClustering(ros::NodeHandle n) : n_(n)
+    ObstaclesCluster(ros::NodeHandle n) : n_(n)
     {
         // publish to the /cluster topic
         clusters_pub_ = n_.advertise<multi_obstacles_tracker_msgs::ClusterStampedArray>("/cluster", 10);
 
         // subscribe to the /scan_filtered topic
-        cloud_sub_ = n_.subscribe<sensor_msgs::PointCloud2>("/scan_filtered", 10, &ObstaclesClustering::filteredScanCallback, this);
+        cloud_sub_ = n_.subscribe<sensor_msgs::PointCloud2>("/scan_filtered", 10, &ObstaclesCluster::filteredScanCallback, this);
     }
 
     void filteredScanCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud_in)
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     ros::NodeHandle n;
 
     // create scan filter
-    ObstaclesClustering oc(n);
+    ObstaclesCluster oc(n);
 
     // loop ros
     ros::spin();
