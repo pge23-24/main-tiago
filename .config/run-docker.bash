@@ -3,15 +3,21 @@
 # Lancement du docker
 xhost +local:root
 
+
+# HOW IT WORKS
+# allow access to network manager - dbus, net-host, privileged
+# ROS shenanigans - net-host, ipc-host 
+# Display sharing - e-display, x11-unix, dri-card0 
+
 docker run -it \
     -e DISPLAY \
-    -e QT_X11_NO_MITSHM=1 \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v /dev/dri/card0:/dev/dri/card0 \
     -v /var/run/dbus:/var/run/dbus \
-    --net host \
     --privileged \
+    --net host \
+    --ipc host \
     -v ./src:/packages \
-    pge/tiago-rob:2.0
+    pge/tiago-rob:latest
 
 xhost -local:root
