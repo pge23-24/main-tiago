@@ -19,7 +19,7 @@ docker tag frenchfry06/tiago-rob:latest pge/tiago-rob:latest
 
 To run the docker : 
 ```bash
-./setup/run-docker.bash
+bash .config/run-docker.bash
 ```
 
 # Aliases

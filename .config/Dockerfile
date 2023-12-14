@@ -13,3 +13,4 @@ RUN echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bashrc
 
 # Add shortcuts and aliases
 COPY aliases.bash /root/.bash_aliases
+RUN echo "package-link" >> ~/.bashrc

@@ -11,6 +11,7 @@ docker run -it \
     -v /var/run/dbus:/var/run/dbus \
     --net host \
     --privileged \
-    pge/tiago-rob:latest
+    -v ./src:/packages \
+    pge/tiago-rob:2.0
 
 xhost -local:root

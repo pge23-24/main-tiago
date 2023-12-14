@@ -1,6 +1,15 @@
 TIAGO_SSID="PMB2-46c"
 TIAGO_PWD="P@L-R0b0t1cs"
 
+package-link() {
+    echo "[ROS] Adding your packages to workspace ..."
+    find /packages/ \
+        -maxdepth 1 \
+        -mindepth 1 \
+        -type d \
+        -exec ln -sf '{}' /pal_mobile_base_ws/src/ \;
+}
+
 tiago-connect () {
     echo "[NET] Connecting to $TIAGO_SSID ..."
     nmcli device wifi connect $TIAGO_SSID password $TIAGO_PWD
