@@ -56,7 +56,7 @@ public:
         std::vector<pcl::PointIndices> cluster_indices;
         pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
         ec.setClusterTolerance(0.6); // Set the tolerance for cluster creation
-        ec.setMinClusterSize(10);    // Set the minimum number of points a cluster should have
+        ec.setMinClusterSize(100);    // Set the minimum number of points a cluster should have
         ec.setMaxClusterSize(1000);   // Set the maximum number of points a cluster should have
         ec.setSearchMethod(tree);
         ec.setInputCloud(cloud);
@@ -112,7 +112,9 @@ public:
 
             clusters_msg.clusters.push_back(cluster_msg);
         }
-        clusters_pub_.publish(clusters_msg);
+
+        if(clusters_msg.clusters.size() > 0)
+            clusters_pub_.publish(clusters_msg);
     }
 };
 
