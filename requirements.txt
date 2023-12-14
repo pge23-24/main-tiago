@@ -5,3 +5,4 @@ pywavefront
 transformers
 accelerate
 numpy
+natsort
