@@ -54,3 +54,6 @@ COCO2017/
 
 # ZIP fodlers
 *.zip
+
+# USE CASES
+*USE_CASES*
