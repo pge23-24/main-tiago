@@ -9,6 +9,16 @@
 #include <list>
 
 
+class TrackedKalmanFilter
+{
+public:
+    double life_;
+    unsigned id_;
+    KalmanFilter kf_;
+
+    TrackedKalmanFilter(double life, unsigned id, KalmanFilter kf) : life_(life), id_(id), kf_(kf) {}
+};
+
 class ObstaclesTracker
 {
 public:
@@ -22,12 +32,12 @@ public:
     ros::Subscriber clusters_sub_;
 
     // kalman filter vector
-    std::vector<KalmanFilter> filters_;
-    std::vector<double> filters_lifes_;
+    double id = 0;
+    std::vector<TrackedKalmanFilter> filters_;
 
     // thresholds
-    double distance_threshold = 0.1;
-    double time_threshold = 15;
+    double distance_threshold = 0.5;
+    double time_threshold = 5;
     
 
     ObstaclesTracker(ros::NodeHandle n) : n_(n)
@@ -60,9 +70,7 @@ public:
 
             // process the threshold matrix
             // first row by row
-            std::vector<KalmanFilter> tmp_filters_;
-            std::vector<double> tmp_filters_lifes_;
-            Eigen::ArrayXi del_mask = Eigen::ArrayXi::Zero(threshold_matrix.rows());
+            std::vector<unsigned> idx_vec;
             for(unsigned i = 0; i < threshold_matrix.rows(); i++)
             {
                 bool match_found = false;
@@ -71,7 +79,7 @@ public:
                     if(threshold_matrix(i, j) != -1)
                     {
                         // update the i-th filter. Here, we take the timestamp of the first cluster because they all have the same header.
-                        double dt = ((double) clusters_in->clusters[0].header.stamp.sec + (double) clusters_in->clusters[0].header.stamp.nsec/1e-9) - filters_[i].time();
+                        double dt = ((double) clusters_in->clusters[0].header.stamp.sec + (double) clusters_in->clusters[0].header.stamp.nsec/1e9) - filters_[i].kf_.time();
 
                         Eigen::Matrix4d A;
                         A << 1, dt, 0, 0, 
@@ -82,8 +90,8 @@ public:
                         Eigen::Vector2d y;
                         y << clusters_in->clusters[j].barycenter.x, clusters_in->clusters[j].barycenter.y;
 
-                        filters_[i].predict_and_update(y, dt, A);
-                        filters_lifes_[i] = 0;
+                        filters_[i].kf_.predict_and_update(y, dt, A);
+                        filters_[i].life_ = 0;
                         match_found = true;
                         break;
                     }
@@ -92,19 +100,21 @@ public:
                 if(!match_found)
                 {
                     // update life of the fitler. Here, we take the timestamp of the first cluster because they all have the same header.
-                    double dt = ((double) clusters_in->clusters[0].header.stamp.sec + (double) clusters_in->clusters[0].header.stamp.nsec/1e-9) - filters_[i].time();
-                    filters_lifes_[i] += dt;
+                    filters_[i].life_  = ((double) clusters_in->clusters[0].header.stamp.sec + (double) clusters_in->clusters[0].header.stamp.nsec/1e9) - filters_[i].kf_.time();
 
-                    if(filters_lifes_[i] < time_threshold)
+                    if(filters_[i].life_ >= time_threshold)
                     {
-                        tmp_filters_.push_back(filters_[i]);
-                        tmp_filters_lifes_.push_back(filters_lifes_[i]);
+                        idx_vec.push_back(i);
                     }
                 }
             }
 
-            filters_ = tmp_filters_;
-            filters_lifes_ = tmp_filters_lifes_;
+            int counter = 0;
+            for (int k : idx_vec) 
+            {
+                filters_.erase(filters_.begin() + k + counter);
+                counter -= 1;
+            }
 
             // then col by col
             for(unsigned i = 0; i < threshold_matrix.cols(); i++)
@@ -126,19 +136,22 @@ public:
             }
         }
 
+        // TODO: remove this
         for(unsigned i = 0; i < filters_.size(); i++)
         {
-            auto x_hat = filters_[i].state();
-            ROS_INFO("object %d with life %f s: x_x %f; v_x %f; x_y %f; v_y %f; t %f", i, filters_lifes_[i], x_hat(0), x_hat(1), x_hat(2), x_hat(3), filters_[i].time());
+            auto x_hat = filters_[i].kf_.state();
+            ROS_INFO("object %d with life %f s: x_x %f; v_x %f; x_y %f; v_y %f; t %f", filters_[i].id_, filters_[i].life_, x_hat(0), x_hat(1), x_hat(2), x_hat(3), filters_[i].kf_.time());
         }
         ROS_INFO("\n\n");
     }
 
     void addKalmanFilter(const multi_obstacles_tracker_msgs::ClusterStamped cluster_in)
     {
-        // create the KF   
+        // create the KF
+        // set A the dynamics matrix as identity for the init   
         Eigen::Matrix4d A = Eigen::Matrix4d::Identity();
 
+        // set C the measure matrix
         Eigen::MatrixXd C(2, 4);
         C << 1, 0, 0, 0,
             0, 0, 1, 0;
@@ -157,6 +170,7 @@ public:
         R << r, 0,
              0, r;
 
+        // P the cov matrix of the state x
         Eigen::Matrix4d P;
         P << r, 0, 0, 0,
              0, 10*q, 0, 0,
@@ -168,11 +182,10 @@ public:
         // init the KF at the current barycenter of the cluster and with a null velocity
         kf.init(((double) cluster_in.header.stamp.sec + (double) cluster_in.header.stamp.nsec/1e9), Eigen::Vector4d(cluster_in.barycenter.x, 0, cluster_in.barycenter.y, 0));
 
-        // add the KF to the vector
-        filters_.push_back(kf);
-
-        // add life KF to the vector
-        filters_lifes_.push_back(0.0f);
+        // add the KF to the vector with an unique id and life set to zero
+        TrackedKalmanFilter tkf = TrackedKalmanFilter(0.0f, id, kf);
+        id++;
+        filters_.push_back(tkf);
     }
 
     Eigen::MatrixXd computeCostMatrix(const multi_obstacles_tracker_msgs::ClusterStampedArray::ConstPtr& clusters_in)
@@ -184,13 +197,13 @@ public:
         for(unsigned i = 0; i < filters_.size(); i++)
         {
             // predict the state of the i-th filter at k+1 instant
-            double dt = ((double) clusters_in->clusters[0].header.stamp.sec + (double) clusters_in->clusters[0].header.stamp.nsec/1e9) - filters_[i].time();
+            double dt = ((double) clusters_in->clusters[0].header.stamp.sec + (double) clusters_in->clusters[0].header.stamp.nsec/1e9) - filters_[i].kf_.time();
             Eigen::Matrix4d A;
             A << 1, dt, 0, 0, 
                  0, 1, 0, 0, 
                  0, 0, 1, dt, 
                  0, 0, 0, 1;
-            Eigen::VectorXd pred_state = A * filters_[i].state();
+            Eigen::VectorXd pred_state = A * filters_[i].kf_.state();
 
             for(unsigned j = 0; j < clusters_in->clusters.size(); j++)
             {
@@ -199,12 +212,18 @@ public:
                                                                         pred_state(0), pred_state(2));
             }
         }
+
+        // return the cost matrix
         return cost_matrix;
     }
 
     Eigen::MatrixXd computeThresholdMatrix(const Eigen::MatrixXd cost_matrix, double threshold)
     {   
+        // create and set the threshold matrix to -1 with the size of the cost_matrix
         Eigen::MatrixXd threshold_matrix = Eigen::MatrixXd::Constant(cost_matrix.rows(), cost_matrix.cols(), -1);
+
+        // for each row, find the min value and fill the threshold matrix with this value only if value <= threshold. The threshold
+        // represents the min distance between the cluster barycenter and the predicted state necessary to match the cluster with the filter.
         for(unsigned i = 0; i < cost_matrix.rows(); i++)
         {
             Eigen::Index min_col;
@@ -214,11 +233,14 @@ public:
                 threshold_matrix(i, min_col) = min;
             }
         }
+        
+        // return the threshold matrix
         return threshold_matrix;
     }
 
     double computeL1Distance(const double x1, const double y1, const double x2, const double y2)
     {
+        // compute the L1 distance (Manhattan distance)
         return std::abs(x2 - x1) + std::abs(y2 - y1); 
     }
 
