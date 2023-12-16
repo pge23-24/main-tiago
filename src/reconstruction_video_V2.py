@@ -23,6 +23,7 @@ class Yolo:
                 persist=True,
                 tracker="bytetrack.yaml",
                 conf=self.confidence_threshold,
+                verbose=False,
             )
 
             # Return the filtered results
@@ -49,7 +50,7 @@ class Reconstruction:
     def video_detection_yolov8(
         self, nb_use_case, frame_width=1226, frame_height=968, threshold=0.60
     ):
-        models = ["yolov8s", "yolov8m", "yolov8l", "yolov8x"]
+        models = ["yolov8_n", "yolov8s", "yolov8m", "yolov8l", "yolov8x"]
 
         for m in models:
             yolov8 = Yolo(m + ".pt", threshold)

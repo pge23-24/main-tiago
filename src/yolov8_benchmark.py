@@ -39,12 +39,12 @@ class YOLOv8Detector:
         """Process a single image"""
         frame = cv2.imread(image_path)
         frame_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-        results = self.model.predict(source=frame_pil)
+        results = self.model.predict(source=frame_pil, verbose=False)
 
 
 if __name__ == "__main__":
     # Define the models to iterate over
-    models = ["yolov8s.pt", "yolov8m.pt", "yolov8l.pt", "yolov8x.pt"]
+    models = ["yolov8n.pt", "yolov8s.pt", "yolov8m.pt", "yolov8l.pt", "yolov8x.pt"]
 
     # Define the folders containing images
     folders = [
