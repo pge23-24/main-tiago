@@ -8,7 +8,7 @@ xhost +local:root
 # ROS shenanigans - net-host, ipc-host 
 # Display sharing - e-display, x11-unix, dri-card0 
 
-docker run -it \
+docker run -it --rm \
     -e DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v /dev/dri/card0:/dev/dri/card0 \
