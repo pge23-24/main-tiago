@@ -3,34 +3,6 @@ devel/
 build/
 logs/
 
-# packages pal robotic
-src/aruco_ros
-src/backward_ros
-src/custom_end_effector
-src/ddynamic_reconfigure_python
-src/dynamic_introspection
-src/eband_local_planner
-src/gazebo_ros_pkgs
-src/head_action
-src/hey5_description
-src/humanoid_msgs
-src/navigation_layers
-src/omni_*
-src/openslam_gmapping
-src/pal_*
-src/play_motion
-src/pmb2_*
-src/robot_pose
-src/roboticsgroup_gazebo_plugins
-src/ros_*
-src/rviz_plugin_covariance
-src/simple_*
-src/slam_gmapping
-src/teleop_tools
-src/tf_lookup
-src/tiago_*
-src/setup.*
-
 # fichiers de configuration
 .catkin_tools/
 

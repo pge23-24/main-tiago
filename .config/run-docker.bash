@@ -3,7 +3,6 @@
 # Lancement du docker
 xhost +local:root
 
-
 # HOW IT WORKS
 # allow access to network manager - dbus, net-host, privileged
 # ROS shenanigans - net-host, ipc-host 
@@ -17,7 +16,7 @@ docker run -it \
     --privileged \
     --net host \
     --ipc host \
-    -v ./src:/packages \
+    -v ./src:/workspace/src/pge_packages \
     pge/tiago-rob:latest
 
 xhost -local:root

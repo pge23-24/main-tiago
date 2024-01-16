@@ -2,8 +2,13 @@ FROM palroboticssl/pal_mobile_base_tutorials:noetic
 
 USER root
 
+# Move workspace
+RUN mv /pal_mobile_base_ws /workspace
+RUN sed -i 's/pal_mobile_base_ws/workspace/g' ~/.bashrc
+WORKDIR /workspace
+
 # Install network-manager
-RUN apt update && apt install -y network-manager
+RUN apt update && apt install -y network-manager tmux
 
 # QT config
 RUN echo "export QT_X11_NO_MITSHM=1" >> ~/.bashrc
@@ -13,4 +18,3 @@ RUN echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bashrc
 
 # Add shortcuts and aliases
 COPY aliases.bash /root/.bash_aliases
-RUN echo "package-link" >> ~/.bashrc
