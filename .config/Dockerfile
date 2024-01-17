@@ -3,7 +3,7 @@ FROM palroboticssl/pal_mobile_base_tutorials:noetic
 USER root
 
 # Move workspace
-RUN mv /pal_mobile_base_ws /workspace
+RUN ln -s /pal_mobile_base_ws /workspace
 RUN sed -i 's/pal_mobile_base_ws/workspace/g' ~/.bashrc
 WORKDIR /workspace
 
@@ -17,4 +17,5 @@ RUN mkdir -m 700 -p /run/user/$(id -u)
 RUN echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bashrc
 
 # Add shortcuts and aliases
+RUN echo "cd /workspace" >> /root/.bashrc
 COPY aliases.bash /root/.bash_aliases
