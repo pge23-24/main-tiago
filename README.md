@@ -4,17 +4,19 @@ Repo principal pour le code qui sera sur le robot
 
 # INSTALLATION DE L'ENVIRONNEMENT VIRTUEL
 
-Pour installer l'environnement virtuel nécessaire au projet, exécutez la commande suivante dans la racine du dossier du projet :
+Pour installer l'environnement virtuel nécessaire au projet, exécutez la commande suivante dans le dossier `prototyping` du dossier du projet :
 
 ```bash
-bash bash ./setup/venv_install.sh
+bash ./setup/venv_install.sh
 ```
 
-Afin de désinstaller la venv, la procédure est identique mais le script à lancer est `venv_uninstall.sh`, toujours dans la racine du projet.
+Afin de désinstaller la venv, la procédure est identique mais le script à lancer est `venv_uninstall.sh`, toujours dans le dossier `prototyping`.
 
 ```bash
-bash bash ./setup/venv_uninstall.sh
+bash ./setup/venv_uninstall.sh
 ```
+
+Le but actuel de cette venv n'est pas de faire tourner le workspace ros, mais de pouvoir avoir un environnement commun aux prototypages.
 
 # GIT ET L'INTEGRATION CONTINUE
 
