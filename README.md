@@ -1,24 +1,6 @@
 # main-tiago
 
-Repo principal pour le code qui sera sur le robot
-
-# INSTALLATION DE L'ENVIRONNEMENT VIRTUEL
-
-Pour installer l'environnement virtuel nécessaire au projet, exécutez la commande suivante dans le dossier `prototyping` du dossier du projet :
-
-```bash
-bash ./setup/venv_install.sh
-```
-
-Afin de désinstaller la venv, la procédure est identique mais le script à lancer est `venv_uninstall.sh`, toujours dans le dossier `prototyping`.
-
-```bash
-bash ./setup/venv_uninstall.sh
-```
-
-Le but actuel de cette venv n'est pas de faire tourner le workspace ros, mais de pouvoir avoir un environnement commun aux prototypages.
-
-# GIT ET L'INTEGRATION CONTINUE
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
 Repo principal pour le code qui tourne sur le PC du robot Tiago.
 
@@ -87,8 +69,26 @@ Le code source du projet est sur un repo principal, qui sert de référence de l
 Pour assurer la "qualité" du code produit et éviter les problèmes d'intégration, plusieurs outils plus ou moins automatisés sont utilisés :
 
 - **cpplint** : vérifie que le code c++ est conforme aux normes de codage de Google (exigence par le client)
-  Cpplint est executé automatiquement avant chaque commit. Si des erreurs sont détectées, le commit est annulé et un message d'erreur est affiché. Il est donc nécessaire de corriger les erreurs avant de pouvoir commit. Il ne vérifie pas les erreurs de compilation, uniquement les erreurs de style.
+Cpplint est executé automatiquement avant chaque commit. Si des erreurs sont détectées, le commit est annulé et un message d'erreur est affiché. Il est donc nécessaire de corriger les erreurs avant de pouvoir commit. Il ne vérifie pas les erreurs de compilation, uniquement les erreurs de style.
 
 - **Google Test** : framework de test unitaire pour c++
 Les tests unitaires seront tous executé avant de merge une pull request sur le repo principal. Le taux de couverture de ces tests sera vérifié.
 La compilation sera également vérifiée à ce moment là.
+
+## Prototypage Python
+
+###  INSTALLATION DE L'ENVIRONNEMENT VIRTUEL
+
+Pour installer l'environnement virtuel nécessaire au projet, exécutez la commande suivante dans le dossier `prototyping` du dossier du projet :
+
+```bash
+bash ./setup/venv_install.sh
+```
+
+Afin de désinstaller la venv, la procédure est identique mais le script à lancer est `venv_uninstall.sh`, toujours dans le dossier `prototyping`.
+
+```bash
+bash ./setup/venv_uninstall.sh
+```
+
+Le but actuel de cette venv n'est pas de faire tourner le workspace ros, mais de pouvoir avoir un environnement commun aux prototypages.
