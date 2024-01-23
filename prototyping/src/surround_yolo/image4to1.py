@@ -26,7 +26,6 @@ class CvFunction:
                 imgpoints.append(corners2)
                 # Draw and display the corners
                 cv.drawChessboardCorners(img, (7, 6), corners2, ret)
-                cv.imshow("img", img)
                 cv.waitKey(500)
         cv.destroyAllWindows()
         K = None
