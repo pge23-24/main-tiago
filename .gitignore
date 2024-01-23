@@ -57,3 +57,10 @@ COCO2017/
 
 # USE CASES
 *USE_CASE*
+
+# Vscode cache
+*.vscode
+
+# Irrevelant assets
+localization
+bird_view

@@ -9,5 +9,5 @@ jobs:
         with:
           python-version: 3.11
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r Setups/requirements.txt
       - run: python -m unittest discover -v -s test
