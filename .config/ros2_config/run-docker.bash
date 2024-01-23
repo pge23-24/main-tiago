@@ -12,7 +12,7 @@ docker run -it --rm \
     --net host \
     --ipc host \
     -e ROS_MASTER_URI=http://localhost:11311 \
-    -v ./ros2_ws/src:/workspace/src \
+    -v ./vison_ws/src:/workspace/src \
     cario360/ros2
 
 xhost -local:root

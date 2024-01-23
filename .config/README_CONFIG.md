@@ -65,12 +65,17 @@ bash .config/ros1_config/run-docker.bash
 
 ### Build ROS1
 
-Les packages sont tous dans le docker, dans le dossier pge_packages.
-Se placer dans le package à build :
+NE PAS UTILISER `catkin_make` et commandes associées. Utiliser `catkin build` à la place.
 
 ```bash
-catkin build --this
+catkin build
 ```
+
+NE PAS UTILISER `catkin build` sans option à la racine du workspace. Cela compilerai tout les packages Pal-robotics, ce qui peut être long et inutile puisque déjà fait.
+
+- `--continue-on-failure` : Continue la compilation même si l'un des packages rate.
+- `--this` : Compile uniquement le package dans lequel tu es situé.
+- `<package-1> <package-2>` : compile uniquement les packages spécifiés.
 
 ### Aliases
 

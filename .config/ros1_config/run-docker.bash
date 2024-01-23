@@ -16,7 +16,7 @@ docker run -it --rm \
     --privileged \
     --net host \
     --ipc host \
-    -v ./ros1_ws/src:/workspace/src/pge_packages \
+    -v ./rob_ws/src:/workspace/src/pge_packages \
     -e ROS_MASTER_URI=http://localhost:11311 \
     cario360/ros-tiago:latest
 
