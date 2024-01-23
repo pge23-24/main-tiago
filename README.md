@@ -74,3 +74,21 @@ Cpplint est executé automatiquement avant chaque commit. Si des erreurs sont d�
 - **Google Test** : framework de test unitaire pour c++
 Les tests unitaires seront tous executé avant de merge une pull request sur le repo principal. Le taux de couverture de ces tests sera vérifié.
 La compilation sera également vérifiée à ce moment là.
+
+## Prototypage Python
+
+###  INSTALLATION DE L'ENVIRONNEMENT VIRTUEL
+
+Pour installer l'environnement virtuel nécessaire au projet, exécutez la commande suivante dans le dossier `prototyping` du dossier du projet :
+
+```bash
+bash ./setup/venv_install.sh
+```
+
+Afin de désinstaller la venv, la procédure est identique mais le script à lancer est `venv_uninstall.sh`, toujours dans le dossier `prototyping`.
+
+```bash
+bash ./setup/venv_uninstall.sh
+```
+
+Le but actuel de cette venv n'est pas de faire tourner le workspace ros, mais de pouvoir avoir un environnement commun aux prototypages.

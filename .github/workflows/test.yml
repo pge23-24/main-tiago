@@ -1,0 +1,13 @@
+name: run unittests
+on: ["push"]
+jobs:
+  test:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install -r prototyping/setup/requirements.txt
+      - run: python -m unittest discover -v -s prototyping/test

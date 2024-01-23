@@ -1,0 +1,71 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Virtual environment
+.venv
+
+# Models
+*.ckpt
+*.pth
+*.pt
+
+# Pycache
+*.pyc
+
+# Log folder
+*log*
+
+# COCO dataset
+COCO_2017/
+COCO2017/
+
+# Surround dataset
+*/DATA*
+
+# ZIP fodlers
+*.zip
+
+# USE CASES
+*USE_CASE*
+
+# Vscode cache
+*.vscode
+
+# Irrevelant assets
+localization
+bird_view
+
+# Mac folders
+.DS_Store
+*/.DS_Store
+*DS_Store
