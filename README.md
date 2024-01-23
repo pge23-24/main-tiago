@@ -1,9 +1,39 @@
 # main-tiago
+
 Repo principal pour le code qui sera sur le robot
 
-# GIT ET L'INTEGRATION CONTINUE
+## Installation
 
-## Utilisation de Git lors du PGE
+### Prérequis
+
+Ubuntu 20.04
+Git installé :
+
+```bash
+sudo apt install git
+```
+
+Clé SSH configurée pour Github (<https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh>)
+
+### Clonage et installation
+
+Cloner le repo :
+
+```bash
+git clone <repo>
+```
+
+Lancer le script d'installation :
+
+```bash
+source install.bash
+```
+
+Attention, l'installation peut être longue (jusqu'à 40 minutes si vous n'avez rien du tout d'installé sur votre machine, dont plus de 20 minutes juste pour le build du workspace).
+
+## GIT ET L'INTEGRATION CONTINUE
+
+### Utilisation de Git lors du PGE
 
 Le code source du projet est sur un repo principal, qui sert de référence de l'avancée du projet. Chaque équipe a un repo forké du repo principal, et c'est sur ce repo que les équipes travaillent. Lorsqu'une fonctionnalité est terminée, elle est pushée sur le repo de l'équipe, puis un pull request est fait sur le repo principal. Un membre de l'équipe de validation du code se charge de vérifier le code et de le merger sur le repo principal.
 
@@ -16,7 +46,7 @@ Cpplint est executé automatiquement avant chaque commit. Si des erreurs sont d�
 Les tests unitaires seront tous executé avant de merge une pull request sur le repo principal. Le taux de couverture de ces tests sera vérifié.
 La compilation sera également vérifiée à ce moment là.
 
-## Cpplint avec Pre commit
+### Cpplint avec Pre commit
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
@@ -52,62 +82,80 @@ Configuration de pre-commit :
 pre-commit install
 ```
 
-# Procédure de connexion au robot simulé
+## Procédure de connexion au robot simulé
 
-# Procédure de connexion au robot Tiago
-## Dépendances
+## Procédure de connexion au robot Tiago
+
+### Dépendances
+
+Si l'installation à été faite correctement, il ne devrait pas y avoir de problème. Sinon, voici les dépendances :
+
 - Ubuntu 20
-- ROS Noetic : http://wiki.ros.org/noetic/Installation/Ubuntu
+- ROS Noetic : <http://wiki.ros.org/noetic/Installation/Ubuntu>
 - PAL packages :
-    - Suivre ce tutoriel : http://wiki.ros.org/Robots/TIAGo/Tutorials/Installation/InstallUbuntuAndROS
-    - Avant la dernière commande de l'étape 3, exécuter ces lignes :
-      ```
-      sudo apt-get install ros-noetic-navigation
-      sudo apt-get install ros-noetic-map-server
-      sudo apt-get install ros-noetic-four-wheel-steering-controller
-      sudo apt-get install ros-noetic-urdf-geometry-parser
-      sudo apt-get install ros-noetic-ddynamic-reconfigure
-      sudo apt-get install ros-noetic-people
-      sudo apt-get install ros-noetic-twist-mux
-      ```
+  - Suivre ce tutoriel : <http://wiki.ros.org/Robots/TIAGo/Tutorials/Installation/InstallUbuntuAndROS>
+  - Avant la dernière commande de l'étape 3, exécuter ces lignes :
 
-## Connexion
-### Méthode 1
-Utiliser la commande suivante dans le workspace :
+```bash
+sudo apt-get install ros-noetic-navigation
+sudo apt-get install ros-noetic-map-server
+sudo apt-get install ros-noetic-four-wheel-steering-controller
+sudo apt-get install ros-noetic-urdf-geometry-parser
+sudo apt-get install ros-noetic-ddynamic-reconfigure
+sudo apt-get install ros-noetic-people
 ```
+
+### Connexion
+
+#### Méthode 1
+
+Utiliser la commande suivante dans le workspace :
+
+```bash
 source connect_to_robot.bash
 ```
 
-### Méthode 2
-#### Etape 1
+#### Méthode 2
+
+##### Etape 1
+
 Se déplacer dans le workspace d'intérêt <ros_ws> :
-```
+
+```bash
 cd <ros_ws>
 ```
 
-#### Etape 2
+##### Etape 2
+
 Dans le workspace, mettre à jour les paquets :
-```
+
+```bash
 source /opt/ros/noetic/setup.bash
 source devel/setup.bash
 ```
 
-#### Etape 3
+##### Etape 3
+
 Se connecter au réseau Wi-Fi émis par le robot TiaGo :
-```
+
+```bash
 SSID : PMB2-46c
 PWD  : P@L-R0b0t1cs
 ```
 
-#### Etape 4
+##### Etape 4
+
 Récupérer l'adresse IP du PC sur le nouveau réseau :
-```
+
+```bash
 ip address
 ```
 
-#### Etape 5
+##### Etape 5
+
 Mettre à jour les variables d'environnement :
-```
+
+```bash
 export ROS_MASTER_URI=http://10.0.68.1:11311
 export ROS_IP=<pc_ip>
 ```
