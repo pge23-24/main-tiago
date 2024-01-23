@@ -2,7 +2,7 @@ import unittest
 import os
 import numpy as np
 import cv2
-from src.yolov5_benchmark import YOLOv5Detector
+from prototyping.src.yolov5_benchmark import YOLOv5Detector
 import shutil
 
 

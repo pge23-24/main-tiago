@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 import cv2
-from src.surround_yolo.ImageUndistorter import ImageUndistorter
+from prototyping.src.surround_yolo.undistort import ImageUndistorter
 
 
 class TestImageUndistorter(unittest.TestCase):

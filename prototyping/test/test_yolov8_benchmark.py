@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import time
 from PIL import Image
-from src.yolov8_benchmark import YOLOv8Detector
+from prototyping.src.yolov8_benchmark import YOLOv8Detector
 import shutil
 
 

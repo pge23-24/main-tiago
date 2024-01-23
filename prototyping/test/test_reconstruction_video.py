@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import os
 import cv2
-from src.reconstruction_video import VideoReconstruction
+from prototyping.src.reconstruction_video import VideoReconstruction
 import io
 from contextlib import redirect_stdout
 
