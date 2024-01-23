@@ -1,0 +1,11 @@
+# elements générés
+devel/
+build/
+logs/
+
+# fichiers de configuration
+.catkin_tools/
+
+# ide
+.vscode/
+.ignore/
