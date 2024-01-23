@@ -64,3 +64,8 @@ COCO2017/
 # Irrevelant assets
 localization
 bird_view
+
+# Mac folders
+.DS_Store
+*/.DS_Store
+*DS_Store
