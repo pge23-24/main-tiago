@@ -1,7 +1,7 @@
 import os
 import cv2
 from natsort import natsorted
-from src.surround_yolo.undistort import ImageUndistorter
+from src.surround_yolo.ImageUndistorter import ImageUndistorter
 import numpy as np
 
 
