@@ -1,0 +1,54 @@
+name: ROS1 Test Workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  WORKSPACE: "rob_ws"
+  ROS_DISTRO: "noetic"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    container: 
+      image: cario360/ros-tiago
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Setup ROS Environment 
+      run: |
+        echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+        source ~/.bashrc
+      shell: bash
+
+    - name: Install Dependencies 
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-catkin-tools python3-osrf-pycommon
+      shell: bash
+
+    - name: Build
+      run: |
+        cd $WORKSPACE
+        source /opt/ros/$ROS_DISTRO/setup.bash
+        catkin build
+      shell: bash
+
+
+    - name: Launch ROS core
+      run: |
+        source /opt/ros/$ROS_DISTRO/setup.bash
+        roscore &
+      shell: bash
+
+    - name: Run Tests
+      run: |
+        source /opt/ros/$ROS_DISTRO/setup.bash
+        cd $WORKSPACE
+        catkin test
+        catkin_test_results build
+      shell: bash
