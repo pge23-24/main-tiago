@@ -1,9 +1,4 @@
-import os
-from prototyping.src.surround_yolo import sift
-from prototyping.src.surround_yolo import image4to1_V2
-from prototyping.src.surround_yolo import zoom
 import cv2 as cv
-import numpy as np
 
 class Sticher:
     def __init__(self):
@@ -26,7 +21,7 @@ if __name__ == "__main__":
     img3 = cv.imread("test_images_damien_stich/USE_CASE_1/CAMERA_3/reel.png")
     img4 = cv.imread("test_images_damien_stich/USE_CASE_1/CAMERA_2/reel.png")
 
-    list4images = [img4, img1, img3, img2]
+    list4images = [img1, img2, img3, img4]
     s = Sticher()
     s.stitching(list4images)
 

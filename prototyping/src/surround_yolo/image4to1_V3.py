@@ -2,7 +2,7 @@ import zoom
 import numpy as np
 import cv2 as cv
 import os
-
+import sift
 
 class CvFunction:
     def calibrate(self, folderImages):
@@ -86,6 +86,7 @@ class Fuze:
         return result
 
 
+
 if __name__ == "__main__":
 
     folderImagesMires = "test_images_damien_stich/selected_img_mires"  # A remplir sur ordi conti
@@ -95,6 +96,7 @@ if __name__ == "__main__":
 
     c = CvFunction()
     f = Fuze()
+    s = sift.PanoramaFusion()
 
     # k, d, dim = c.calibrate(folderImagesMires) # A faire pour trouver k, d et DIM
     dim = (1226, 968)
@@ -133,5 +135,12 @@ if __name__ == "__main__":
         # Ordre des images pour les cam : 4 1 3 2
         list4images = [undistort_zoom_img4, undistort_zoom_img1, undistort_zoom_img3, undistort_zoom_img2]
 
+        # Concatenation à la main
         concat = f.concatener_images_horizontalement(list4images)
         cv.imwrite(folder_save_undistort_and_stich + f"/concat{i}.png", concat)
+
+        image_fusionnee = s.fusionner_images(img3, img2)
+        cv.imwrite("test_images_damien_stich/resultats/test_sift.png", image_fusionnee)
+        cv.imshow('Image fusionnée', image_fusionnee)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
