@@ -31,11 +31,6 @@ class CvFunction:
                 objpoints.append(objp)
                 cv.cornerSubPix(gray, corners, (3, 3), (-1, -1), subpix_criteria)
                 imgpoints.append(corners)
-                # Draw and display the corners
-                cv.drawChessboardCorners(img, (9, 6), corners, ret)
-                cv.imshow('img', img)
-                cv.waitKey(0)
-                cv.destroyAllWindows()
         N_OK = len(objpoints)
         K = np.zeros((3, 3))
         D = np.zeros((4, 1))
@@ -86,16 +81,17 @@ class Fuze:
         assert listImgCorrected[0].shape[0] == listImgCorrected[1].shape[0] == listImgCorrected[2].shape[0] == \
                listImgCorrected[3].shape[0], "Les hauteurs des images doivent être les mêmes."
 
-        result = np.concatenate((listImgCorrected[0], listImgCorrected[2], listImgCorrected[1], listImgCorrected[3]),
+        result = np.concatenate((listImgCorrected[0], listImgCorrected[1], listImgCorrected[2], listImgCorrected[3]),
                                 axis=1)
         return result
 
 
 if __name__ == "__main__":
+
     folderImagesMires = "test_images_damien_stich/selected_img_mires"  # A remplir sur ordi conti
     test_img_undistort = "test_images_damien_stich/selected_img_mires/image_1124.png"  # A remplir sur ordi conti
     path_use_cases = "test_images_damien_stich/USE_CASE_1"  # A remplir sur ordi conti
-    folder_save_undistort_and_stich = ("test_images_damien_stich/resultats") # A remplir sur ordi conti
+    folder_save_undistort_and_stich = "test_images_damien_stich/resultats"  # A remplir sur ordi conti
     nb_img_in_use_case = 2  # A remplir
 
     c = CvFunction()
@@ -109,7 +105,7 @@ if __name__ == "__main__":
     z = zoom.Zoom(folder_save_undistort_and_stich + "/" + "calibre_zoom.png")
 
     directories = [d for d in os.listdir(path_use_cases) if os.path.isdir(os.path.join(path_use_cases, d))]
-    
+
     for i in range(nb_img_in_use_case):
         strImg = f"/image_{i}.png"
 
@@ -121,14 +117,14 @@ if __name__ == "__main__":
         undistort_img2 = c.undistort(img2, k, d, dim)
         undistort_zoom_img2 = z.zoom_image(undistort_img2)
 
-        img3 = cv.imread(path_use_cases + "/" + directories[3] + strImg)
+        img3 = cv.imread(path_use_cases + "/" + directories[2] + strImg)
         undistort_img3 = c.undistort(img3, k, d, dim)
         undistort_zoom_img3 = z.zoom_image(undistort_img3)
 
-        img4 = cv.imread(path_use_cases + "/" + directories[2] + strImg)
+        img4 = cv.imread(path_use_cases + "/" + directories[3] + strImg)
         undistort_img4 = c.undistort(img4, k, d, dim)
         undistort_zoom_img4 = z.zoom_image(undistort_img4)
 
-        list4images = [undistort_zoom_img1, undistort_zoom_img2, undistort_zoom_img3, undistort_zoom_img4]
+        list4images = [undistort_zoom_img4, undistort_zoom_img1, undistort_zoom_img3, undistort_zoom_img2]
         concat = f.concatener_images_horizontalement(list4images)
         cv.imwrite(folder_save_undistort_and_stich + f"/concat{i}.png", concat)
