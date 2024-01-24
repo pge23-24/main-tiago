@@ -1,5 +1,7 @@
 # main-tiago
 
+Cette branche a pour but d'implémenter la solution basique demandée par le client.
+
 Repo principal pour le code qui sera sur le robot
 
 # INSTALLATION DE L'ENVIRONNEMENT VIRTUEL
