@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 from cv_bridge import CvBridge
 import cv2
 import argparse
@@ -39,8 +40,17 @@ class MinimalPublisher(Node):
     def __init__(self, camera_id):
         super().__init__("minimal_publisher")
         self.camera_id = camera_id
-        self.topic_name = f"annotated_images_{camera_id}"
-        self.publisher = self.create_publisher(Image, self.topic_name, 10)
+
+        self.topic_name_image = f"annotated_images_{camera_id}"
+        self.publisher_annotated_image = self.create_publisher(
+            Image, self.topic_name_image, 10
+        )
+
+        self.topic_name_information = f"information_{camera_id}"
+        self.publisher_information = self.create_publisher(
+            String, self.topic_name_information, 10
+        )
+
         self.subscription = self.create_subscription(
             Image, f"Cam{camera_id}/image_raw", self.listener_callback, 10
         )
@@ -58,11 +68,17 @@ class MinimalPublisher(Node):
         data = result.boxes.data.cpu().tolist()
         h, w = (1, 1)
         for i, row in enumerate(data):  # xyxy, track_id if tracking, conf, class_id
+            # Calculate center x-coordinate of the bounding box
+            center_x = (row[0] + row[2]) / (2 * w)
+            # Map the center x-coordinate to the angle range [-95°, 95°]
+            angle = (center_x - 0.5) * 190 - 95
+
             box = {
                 "x1": row[0] / w,
                 "y1": row[1] / h,
                 "x2": row[2] / w,
                 "y2": row[3] / h,
+                "angle": angle,
             }
             class_id = int(row[-1])
             name = result.names[class_id]
@@ -96,9 +112,22 @@ class MinimalPublisher(Node):
 
         results = self.detector.compute(cv_image)
         if results:
+            # Annotated image part
             annotated_image = results[0].plot()
-            msg = self._cv_bridge.cv2_to_imgmsg(annotated_image, "rgb8")
-            self.publisher.publish(msg)
+            encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
+                annotated_image, "rgb8"
+            )
+            self.publisher_annotated_image.publish(encoded_annotated_image)
+
+            # Informations part
+            informations = String()
+            informations.data = str(
+                self.toData(results)
+            )  # TODO: Vérifier ici l'intégrité des données
+            self.publisher_information.publish(informations)
+            """self.publisher_information.publish(
+                String(data=str(self.toData(results)))
+            )"""
 
 
 def main(args=None):
