@@ -8,15 +8,30 @@ from ultralytics import YOLO  # YOLOv8 import
 from ultralytics.utils import LOGGER  # LOGGER import
 from rclpy.utilities import remove_ros_args
 import sys
+import torch
 
 
-class YOLODetector:
+class YOLOv8Detector:
     def __init__(self):
-        self.model = YOLO("yolov8s-pose.pt")
+        # Load YOLOv8 model
+        self.model = YOLO("yolov8s.pt")
 
     def compute(self, image):
+        """Process a single image"""
         if image is not None:
             results = self.model.track(image, persist=True, tracker="bytetrack.yaml")
+            return results
+
+
+class YOLOv5Detector:
+    def __init__(self, model_name="yolov5s"):
+        # Load YOLOv5 model
+        self.model = torch.hub.load("ultralytics/yolov5", model_name, pretrained=True)
+
+    def compute(self, image):
+        """Process a single image"""
+        if image is not None:
+            results = self.model(image)
             return results
 
 
@@ -30,7 +45,7 @@ class MinimalPublisher(Node):
             Image, f"Cam{camera_id}/image_raw", self.listener_callback, 10
         )
         self._cv_bridge = CvBridge()
-        self.detector = YOLODetector()
+        self.detector = YOLOv8Detector()
 
     def toData(self, result, keypoint=False):
         """Convert the object to JSON format."""
