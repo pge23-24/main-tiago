@@ -38,13 +38,13 @@ jobs:
       run: |
         cd $WORKSPACE
         source /opt/ros/$ROS_DISTRO/setup.bash
-        colcon build --blacklist $BLACKLIST
+        colcon build --packages-skip $BLACKLIST
       shell: bash
 
     - name: Run Tests
       run: |
         source /opt/ros/$ROS_DISTRO/setup.bash
         cd $WORKSPACE
-        colcon test --blacklist $BLACKLIST
+        colcon test --packages-skip $BLACKLIST
         colcon test-result --all
       shell: bash
