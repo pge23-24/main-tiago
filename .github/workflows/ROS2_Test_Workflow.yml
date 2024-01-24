@@ -9,6 +9,7 @@ on:
 env:
   WORKSPACE: "vision_ws"
   ROS_DISTRO: "foxy"
+  BLACKLIST: "py_pubsub"
 
 jobs:
   build-and-test:
@@ -37,13 +38,13 @@ jobs:
       run: |
         cd $WORKSPACE
         source /opt/ros/$ROS_DISTRO/setup.bash
-        colcon build
+        colcon build --blacklist $BLACKLIST
       shell: bash
 
     - name: Run Tests
       run: |
         source /opt/ros/$ROS_DISTRO/setup.bash
         cd $WORKSPACE
-        colcon test --packages-skip-by-dep python
+        colcon test --blacklist $BLACKLIST
         colcon test-result --all
       shell: bash

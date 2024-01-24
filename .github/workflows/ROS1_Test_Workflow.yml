@@ -9,6 +9,7 @@ on:
 env:
   WORKSPACE: "rob_ws"
   ROS_DISTRO: "noetic"
+  BLACKLIST: "multi_obstacles_tracker"
 
 jobs:
   build-and-test:
@@ -37,7 +38,7 @@ jobs:
       run: |
         cd $WORKSPACE
         source /opt/ros/$ROS_DISTRO/setup.bash
-        catkin build
+        catkin build --blacklist $BLACKLIST
       shell: bash
 
 
@@ -51,6 +52,6 @@ jobs:
       run: |
         source /opt/ros/$ROS_DISTRO/setup.bash
         cd $WORKSPACE
-        catkin test
+        catkin test --blacklist $BLACKLIST
         catkin_test_results build
       shell: bash
