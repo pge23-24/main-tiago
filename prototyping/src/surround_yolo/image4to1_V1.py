@@ -7,9 +7,15 @@ class CvFunction:
     def calibrate(self, folderImages):
         CHECKERBOARD = (6, 9)
         subpix_criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.1)
-        calibration_flags = cv.fisheye.CALIB_RECOMPUTE_EXTRINSIC + cv.fisheye.CALIB_CHECK_COND + cv.fisheye.CALIB_FIX_SKEW
+        calibration_flags = (
+            cv.fisheye.CALIB_RECOMPUTE_EXTRINSIC
+            + cv.fisheye.CALIB_CHECK_COND
+            + cv.fisheye.CALIB_FIX_SKEW
+        )
         objp = np.zeros((1, CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
-        objp[0, :, :2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
+        objp[0, :, :2] = np.mgrid[0 : CHECKERBOARD[0], 0 : CHECKERBOARD[1]].T.reshape(
+            -1, 2
+        )
         _img_shape = None
         objpoints = []  # 3d point in real world space
         imgpoints = []  # 2d points in image plane.
@@ -20,11 +26,18 @@ class CvFunction:
             if _img_shape == None:
                 _img_shape = img.shape[:2]
             else:
-                assert _img_shape == img.shape[:2], "All images must share the same size."
+                assert (
+                    _img_shape == img.shape[:2]
+                ), "All images must share the same size."
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
             # Chess board corners
-            ret, corners = cv.findChessboardCorners(gray, CHECKERBOARD,
-                                                    cv.CALIB_CB_ADAPTIVE_THRESH + cv.CALIB_CB_FAST_CHECK + cv.CALIB_CB_NORMALIZE_IMAGE)
+            ret, corners = cv.findChessboardCorners(
+                gray,
+                CHECKERBOARD,
+                cv.CALIB_CB_ADAPTIVE_THRESH
+                + cv.CALIB_CB_FAST_CHECK
+                + cv.CALIB_CB_NORMALIZE_IMAGE,
+            )
             # Image points (after refinin them)
             if ret == True:
                 objpoints.append(objp)
@@ -32,7 +45,7 @@ class CvFunction:
                 imgpoints.append(corners)
                 # Draw and display the corners
                 cv.drawChessboardCorners(img, (9, 6), corners, ret)
-                cv.imshow('img', img)
+                cv.imshow("img", img)
                 cv.waitKey(0)
                 cv.destroyAllWindows()
         N_OK = len(objpoints)
@@ -49,7 +62,7 @@ class CvFunction:
             rvecs,
             tvecs,
             calibration_flags,
-            (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 1e-6)
+            (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 1e-6),
         )
         print("Found " + str(N_OK) + " valid images for calibration")
         print("DIM=" + str(_img_shape[::-1]))
@@ -64,29 +77,53 @@ class CvFunction:
         dim2 = None
         dim3 = None
         dim1 = img.shape[:2][::-1]  # dim1 is the dimension of input image to un-distort
-        assert dim1[0] / dim1[1] == DIM[0] / DIM[
-            1], "Image to undistort needs to have same aspect ratio as the ones used in calibration"
+        assert (
+            dim1[0] / dim1[1] == DIM[0] / DIM[1]
+        ), "Image to undistort needs to have same aspect ratio as the ones used in calibration"
         if not dim2:
             dim2 = dim1
         if not dim3:
             dim3 = dim1
-        scaled_K = K * dim1[0] / DIM[0]  # The values of K is to scale with image dimension.
+        scaled_K = (
+            K * dim1[0] / DIM[0]
+        )  # The values of K is to scale with image dimension.
         scaled_K[2][2] = 1.0  # Except that K[2][2] is always 1.0
         # This is how scaled_K, dim2 and balance are used to determine the final K used to un-distort image. OpenCV document failed to make this clear!
-        new_K = cv.fisheye.estimateNewCameraMatrixForUndistortRectify(scaled_K, D, dim2, np.eye(3), balance=balance)
-        map1, map2 = cv.fisheye.initUndistortRectifyMap(scaled_K, D, np.eye(3), new_K, dim3, cv.CV_16SC2)
-        undistorted_img = cv.remap(img, map1, map2, interpolation=cv.INTER_LINEAR, borderMode=cv.BORDER_CONSTANT)
+        new_K = cv.fisheye.estimateNewCameraMatrixForUndistortRectify(
+            scaled_K, D, dim2, np.eye(3), balance=balance
+        )
+        map1, map2 = cv.fisheye.initUndistortRectifyMap(
+            scaled_K, D, np.eye(3), new_K, dim3, cv.CV_16SC2
+        )
+        undistorted_img = cv.remap(
+            img,
+            map1,
+            map2,
+            interpolation=cv.INTER_LINEAR,
+            borderMode=cv.BORDER_CONSTANT,
+        )
 
         return undistorted_img
 
 
 class Fuze:
     def concatener_images_horizontalement(self, listImgCorrected):
-        assert listImgCorrected[0].shape[0] == listImgCorrected[1].shape[0] == listImgCorrected[2].shape[0] == \
-               listImgCorrected[3].shape[0], "Les hauteurs des images doivent être les mêmes."
+        assert (
+            listImgCorrected[0].shape[0]
+            == listImgCorrected[1].shape[0]
+            == listImgCorrected[2].shape[0]
+            == listImgCorrected[3].shape[0]
+        ), "Les hauteurs des images doivent être les mêmes."
 
-        result = np.concatenate((listImgCorrected[0], listImgCorrected[2], listImgCorrected[1], listImgCorrected[3]),
-                                axis=1)
+        result = np.concatenate(
+            (
+                listImgCorrected[0],
+                listImgCorrected[2],
+                listImgCorrected[1],
+                listImgCorrected[3],
+            ),
+            axis=1,
+        )
         return result
 
 
@@ -103,7 +140,11 @@ if __name__ == "__main__":
 
     f = Fuze()
     nbImg = 2  # A remplir
-    directories = [d for d in os.listdir(path_use_cases) if os.path.isdir(os.path.join(path_use_cases, d))]
+    directories = [
+        d
+        for d in os.listdir(path_use_cases)
+        if os.path.isdir(os.path.join(path_use_cases, d))
+    ]
     print(directories)
     for i in range(nbImg):
         strImg = f"/image_{i}.png"
