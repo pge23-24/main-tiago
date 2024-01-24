@@ -69,3 +69,6 @@ bird_view
 .DS_Store
 */.DS_Store
 *DS_Store
+
+# Assets
+assets
