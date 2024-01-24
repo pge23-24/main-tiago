@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>py_pubsub_msgs</name>
+  <version>0.0.0</version>
+  <description>The py_pubsub_msgs package</description>
+
+  <maintainer email="pge@todo.todo">pge</maintainer>
+
+  <license>TODO</license>
+
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <!-- Add additional dependencies here -->
+
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>
