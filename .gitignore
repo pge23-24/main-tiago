@@ -72,3 +72,6 @@ bird_view
 
 # Assets
 assets
+
+# IntellijIdea cache
+.idea
