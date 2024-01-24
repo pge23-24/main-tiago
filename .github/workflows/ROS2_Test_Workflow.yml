@@ -35,7 +35,7 @@ jobs:
 
     - name: Build
       run: |
-        cd ros2_ws
+        cd $WORKSPACE
         source /opt/ros/$ROS_DISTRO/setup.bash
         colcon build
       shell: bash
@@ -43,7 +43,7 @@ jobs:
     - name: Run Tests
       run: |
         source /opt/ros/$ROS_DISTRO/setup.bash
-        cd ros2_ws
+        cd $WORKSPACE
         colcon test
         colcon test-result --all
       shell: bash
