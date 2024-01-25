@@ -130,3 +130,8 @@ prototyping/src/Hough_stitchong/undistort.py
 prototyping/src/Hough_stitchong/test.py
 prototyping/src/Hough_stitchong/selected_img_mires/image_1124.png
 prototyping/src/Hough_stitchong/hough_stitching.py
+# Assets
+assets
+
+# IntellijIdea cache
+.idea
