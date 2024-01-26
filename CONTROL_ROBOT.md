@@ -28,7 +28,7 @@ PWD  : P@L-R0b0t1cs
 Variables d'environnement à configurer pour ROS :
 
 ```bash
-export ROS_MASTER_URI=http://10.0.68.1:11311
+export ROS_MASTER_URI=http://10.68.0.1:11311
 export ROS_IP=<pc_ip>
 ```
 
