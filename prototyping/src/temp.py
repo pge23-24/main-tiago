@@ -15,14 +15,17 @@ from py_pubsub_msgs.msg import ClassCoordinates
 
 class YOLOv8Detector:
     def __init__(self):
+        # Load YOLOv8 model
         self.model = YOLO("yolov8s.pt")
 
     def compute(self, image):
+        """Process a single image"""
         if image is not None:
             results = self.model.track(image, persist=True, tracker="bytetrack.yaml")
             return results
 
 
+# TODO: test this class
 class YOLOv5Detector:
     def __init__(self, model_name="yolov5s"):
         # Load YOLOv5 model
@@ -79,10 +82,7 @@ class MinimalPublisher(Node):
         results = self.detector.compute(cv_image)
         if results:
             # Annotated image part
-            """if self.detector.type() == YOLOv8Detector:"""
             annotated_image = results[0].plot()
-            """elif self.detector.type() == YOLOv5Detector:"""
-            """annotated_image = results.render()[0]"""
             encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
                 annotated_image, "rgb8"
             )
