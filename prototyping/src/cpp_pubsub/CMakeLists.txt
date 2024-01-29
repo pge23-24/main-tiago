@@ -1,3 +1,6 @@
+
+
+
 cmake_minimum_required(VERSION 3.5)
 project(cpp_pubsub)
 
@@ -15,19 +18,40 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(cv_bridge REQUIRED)
-find_package(OpenCV REQUIRED)
+
+# find packages
+set(PACKAGES
+  ament_cmake
+  rclcpp
+  std_msgs
+  cv_bridge
+)
+foreach(PACKAGE ${PACKAGES})
+  find_package(${PACKAGE} REQUIRED)
+endforeach()
+
+add_executable(yolo src/YOLOv5.cpp src/CameraYolo.cpp src/main.cpp)
+ament_target_dependencies(yolo rclcpp std_msgs cv_bridge)
 
 
-add_executable(yolo src/capera_yolo.cpp)
-ament_target_dependencies(yolo rclcpp std_msgs cv_bridge OpenCV)
+# include directories
+target_include_directories(yolo PUBLIC 
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:include>
+    )
+
 
 install(TARGETS
-	yolo
-	DESTINATION lib/${PROJECT_NAME})
+  yolo
+  DESTINATION lib/${PROJECT_NAME}
+  )
+
+# library
+add_library(yolo_lib SHARED src/main.cpp)
+ament_target_dependencies(yolo_lib rclcpp std_msgs cv_bridge)
+
+
+
 
 
 ament_package()

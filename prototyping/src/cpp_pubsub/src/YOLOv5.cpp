@@ -16,7 +16,7 @@
 #include <cv_bridge/cv_bridge.h>
 #endif
 
-#include "YOLOv5.hpp"
+#include "../include/YOLOv5.hpp"
 
 
 using std::placeholders::_1;
@@ -116,7 +116,7 @@ void YOLOv5::findObjects(cv::Mat &image)
     cv::dnn::NMSBoxes(boxes, confidences, Score_threshold, NMS_threshold, nms_result);
 
     std::vector<ObjectDetection> output;
-    for (int i = 0; i < nms_result.size(); i++)
+    for (int i = 0; i < static_cast<int>(nms_result.size()); i++)
     {
         int idx = nms_result[i];
         ObjectDetection result;
