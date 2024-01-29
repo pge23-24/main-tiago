@@ -10,6 +10,12 @@ USER root
 # Install network-manager
 RUN apt update && apt install -y network-manager tmux
 
+# Install pal urdf utils
+RUN cd /pal_mobile_base_ws/src && \
+    git clone https://github.com/pal-robotics/pal_urdf_utils.git && \
+    cd pal_urdf_utils && \
+    catkin build --this
+
 # QT config
 RUN echo "export QT_X11_NO_MITSHM=1" >> ~/.bashrc
 

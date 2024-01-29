@@ -12,7 +12,7 @@
   <rosparam command="load" file="$(find pmb2_controller_configuration_gazebo)/config/mobile_base_controller_multipliers.yaml"/>
 
   <!-- Robot model -->
-  <include file="$(find pmb2_camera)/launch/upload.launch">
+  <include file="$(find cario_static)/launch/upload.launch">
     <arg name="laser_model" value="$(arg laser_model)"/>
     <arg name="rgbd_sensors" value="$(arg rgbd_sensors)"/>
     <arg name="multi"  value="$(arg multi)"/>

@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-    
+
     <xacro:macro name="plateform" params="name base_link">
-		
-		<material name="blue">
-			<color rgba="0.2 0.2 1 1"/>
+
+		<material name="white">
+			<color rgba="0.9 0.9 0.9 1"/>
 		</material>
-	
+
 		<!-- Plateform base visual annd collision mesh -->
 		<joint name="plateform_joint" type="fixed">
 			<parent link="${base_link}"/>
@@ -18,9 +18,9 @@
 		<link name="plateform_link">
 			<visual>
 				<geometry>
-					<mesh filename="$(find pmb2_camera)/src/urdf/robot_top_V1.stl"/>
+					<mesh filename="package://cario_static/urdf/robot_top_V1.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<material name="white"/>
 			</visual>
 			<collision>
 				<origin xyz="0 0 0.2" rpy="0 0 0"/>
@@ -32,8 +32,8 @@
 				<mass value="5"/>
 			<inertia ixx="0.4" ixy="0.0" ixz="0.0" iyy="0.4" iyz="0.0" izz="0.2"/>
 			</inertial>
-		</link>		
-				
+		</link>
+
 	</xacro:macro>
-		
+
 </robot>

@@ -29,7 +29,7 @@
 
   <!-- spawn robot in simulation -->
   <group unless="$(arg simple_sim_model)">
-    <include file="$(find pmb2_camera)/launch/pmb2_spawn.launch">
+    <include file="$(find cario_static)/launch/pmb2_spawn.launch">
       <arg name="laser_model" value="$(arg laser_model)"/>
       <arg name="rgbd_sensors" value="$(arg rgbd_sensors)"/>
       <arg name="gzpose" value="$(arg gzpose)"/>
@@ -50,7 +50,7 @@
   </group>
 
   <!-- bring up robot -->
-  <include file="$(find pmb2_camera)/launch/simulation_pmb2_bringup.launch">
+  <include file="$(find cario_static)/launch/simulation_pmb2_bringup.launch">
     <arg name="public_sim"  value="$(arg public_sim)"/>
     <arg name="simple_sim_model"  value="$(arg simple_sim_model)"/>
   </include>

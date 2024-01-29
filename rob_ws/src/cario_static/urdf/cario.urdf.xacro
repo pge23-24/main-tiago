@@ -49,14 +49,14 @@
   </xacro:if> -->
 
   <!-- Include the camera -->
-  <!-- <xacro:include filename="/home/antoine/rob1-tiago/src/pmb2_camera/src/camera/camera_macro.xacro" /> -->
+  <!-- <xacro:include filename="/home/antoine/rob1-tiago/src/cario_static/src/camera/camera_macro.xacro" /> -->
   <!-- Create the four cameras -->
   <!-- <xacro:camera name="camera_01" parent_link="base_link" pose_offset="0.2134410 0.0 0.6097676" orientation="0.0 ${pi/2} 0.0" />
   <xacro:camera name="camera_02" parent_link="base_link" pose_offset="-0.2134410 0.0 0.6097676" orientation="0.0 -${pi/2} 0.0" />
   <xacro:camera name="camera_03" parent_link="base_link" pose_offset="0.0 0.2894102 0.6097676" orientation="-${pi/2} 0.0 0.0" />
   <xacro:camera name="camera_04" parent_link="base_link" pose_offset="0.0 -0.2894102 0.6097676" orientation="${pi/2} 0.0 0.0" /> -->
 
-  <xacro:include filename="$(find pmb2_camera)/src/urdf/plateform.xacro" />
+  <xacro:include filename="$(find cario_static)/urdf/plateform.xacro" />
   <xacro:plateform name="plateform" base_link="base_link" />
 
 </robot>
