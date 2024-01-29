@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(test_git)
+project(cario_tools)
 
 
 set(CMAKE_CXX_STANDARD 14)

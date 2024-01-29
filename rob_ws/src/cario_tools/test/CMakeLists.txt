@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(test_git_testing)
+project(cario_tools_testing)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,7 +27,7 @@ find_package(rostest REQUIRED)
 if(CATKIN_ENABLE_TESTING)
     catkin_add_gtest(error_loc-test error_loc_test.cpp)
 
-    target_link_libraries(talker-test ${PARENT_PROJECT_NAME}_loc_error_lib ${catkin_LIBRARIES})
+    target_link_libraries(error_loc-test ${PARENT_PROJECT_NAME}_loc_error_lib ${catkin_LIBRARIES})
 
 endif()
 
