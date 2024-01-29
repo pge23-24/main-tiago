@@ -4,7 +4,7 @@
 
 [Doc temporaire](https://docs.google.com/document/d/1pG6wYegVpr1ERmZFlUUp6Ur5FBW4FbInwJ-JJSAe6z4/edit#heading=h.rqqvuok4lc4l)
 
-Pour ce connecter au robot, il faut d'abord se connecter au réseau Wi-Fi émis par le robot, puis indiquer à ROS1 de se connecter au master du robot.
+Pour se connecter au robot, il faut d'abord se connecter au réseau Wi-Fi émis par le robot, puis indiquer à ROS1 de se connecter au master du robot.
 
 Utiliser l'alias du docker suivant :
 
