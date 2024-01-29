@@ -3,7 +3,7 @@
 <package format="3">
   <name>cpp_pubsub</name>
   <version>0.0.0</version>
-  <description>cpp minimal publisher/subscriber</description>
+  <description>cpp Camera manager with YOLO</description>
   <maintainer email="simon.berlanga@univ-tlse3.fr">pge-2023</maintainer>
   <license>TODO: License declaration</license>
 
@@ -17,6 +17,5 @@
     <depend>rclcpp</depend>
     <depend>std_msgs</depend>
     <depend>cv_bridge</depend>
-    <depend>OpenCV</depend>
   </export>
 </package>

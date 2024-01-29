@@ -11,10 +11,11 @@
 #include "std_msgs/msg/string.hpp"
 #endif
 
-#include "CameraYolo.hpp"
+#include "../include/CameraYolo.hpp"
 
 int main(int argc, char * argv[])
 {
+  std::cout << cv::CV_VERSION << std::endl;
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<CameraYolo>());
   rclcpp::shutdown();
