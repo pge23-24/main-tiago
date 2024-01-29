@@ -112,7 +112,7 @@ if __name__ == "__main__":
     z = zoom.Zoom(folder_save_undistort_and_stich + "/" + "calibre_zoom.png")
 
     directories = [d for d in os.listdir(path_use_cases) if os.path.isdir(os.path.join(path_use_cases, d))]
-
+    print(directories)
     for i in range(nb_img_in_use_case):
         strImg = f"/image_{i}.png"
 
@@ -124,11 +124,11 @@ if __name__ == "__main__":
         undistort_img2 = c.undistort(img2, k, d, dim)
         undistort_zoom_img2 = z.zoom_image(undistort_img2)
 
-        img3 = cv.imread(path_use_cases + "/" + directories[2] + strImg)
+        img3 = cv.imread(path_use_cases + "/" + directories[3] + strImg)
         undistort_img3 = c.undistort(img3, k, d, dim)
         undistort_zoom_img3 = z.zoom_image(undistort_img3)
 
-        img4 = cv.imread(path_use_cases + "/" + directories[3] + strImg)
+        img4 = cv.imread(path_use_cases + "/" + directories[2] + strImg)
         undistort_img4 = c.undistort(img4, k, d, dim)
         undistort_zoom_img4 = z.zoom_image(undistort_img4)
 
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         concat = f.concatener_images_horizontalement(list4images)
         cv.imwrite(folder_save_undistort_and_stich + f"/concat{i}.png", concat)
 
-        image_fusionnee = s.fusionner_images(img3, img2)
+        image_fusionnee = s.fusionner_images(img4, img1, img3)
         cv.imwrite("test_images_damien_stich/resultats/test_sift.png", image_fusionnee)
         cv.imshow('Image fusionnée', image_fusionnee)
         cv.waitKey(0)
