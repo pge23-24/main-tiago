@@ -5,8 +5,8 @@ xhost +local:root
 
 # HOW IT WORKS
 # allow access to network manager - dbus, net-host, privileged
-# ROS shenanigans - net-host, ipc-host 
-# Display sharing - e-display, x11-unix, dri-card0 
+# ROS shenanigans - net-host, ipc-host
+# Display sharing - e-display, x11-unix, dri-card0
 
 docker run -it --rm \
     -e DISPLAY \
@@ -16,8 +16,8 @@ docker run -it --rm \
     --privileged \
     --net host \
     --ipc host \
-    -v ./rob_ws/src:/workspace/src/pge_packages \
-    -e ROS_MASTER_URI=http://localhost:11311 \
+    --pid host \
+    -v ./rob_ws/src:/pal_mobile_base_ws/src/pge_packages \
     cario360/ros-tiago:latest
 
 xhost -local:root
