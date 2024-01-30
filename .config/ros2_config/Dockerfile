@@ -28,3 +28,20 @@ RUN echo "export QT_X11_NO_MITSHM=1" >> ~/.bashrc
 
 RUN mkdir -m 700 -p /run/user/$(id -u)
 RUN echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bashrc
+
+# Install dependencies of the project
+# install opencv for c++, latest version
+RUN apt update && apt install -y cmake g++ wget unzip
+RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
+RUN unzip opencv.zip
+
+RUN mkdir -p build && cd build \
+    && cmake ../opencv-4.x \
+    && cmake --build .
+
+
+
+
+
+
+
