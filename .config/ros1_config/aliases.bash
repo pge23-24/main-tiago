@@ -1,3 +1,5 @@
+# Connection to robot
+
 TIAGO_SSID="PMB2-46c"
 TIAGO_PWD="P@L-R0b0t1cs"
 
@@ -12,7 +14,7 @@ tiago-connect () {
                 ;;
             *)
                 echo "Unknown option: $1"
-                exit 1
+                return
                 ;;
         esac
     done
@@ -38,5 +40,53 @@ tiago-disconnect () {
 alias tc='tiago-connect'
 alias td='tiago-disconnect'
 
-alias rviz='rosrun rviz rviz' # -d $(rospack find tiago_rviz)/rviz/pge-nav.rviz'
+# RVIZ and Gazebo
+
+alias rviz='roslaunch cario_rviz navigation.launch'
 alias gazebo='tiago-disconnect; roslaunch pmb2_gazebo pmb2_gazebo.launch'
+
+# Mapping
+
+set-nav-mode () {
+    if [[ "$1" != "MAP" && "$1" != "LOC" ]]; then
+        echo "Invalid mode: $1"
+        return
+    fi
+
+    rosservice call /pal_navigation_sm "input: '$1'"
+}
+
+start-mapping () {
+    set-nav-mode MAP
+    rviz
+}
+
+save-map () {
+    # Get the map name as user input
+    echo "Enter map name:"
+    read map_name
+
+    # Save the map
+    rosrun map_server map_saver -f $map_name
+    rosservice call /pal_map_manager/save_map "directory: '$map_name'"
+
+    # Set the navigation mode to localization
+    set-nav-mode LOC
+
+    # Find a way to save the map locally
+}
+
+set-map () {
+    rosservice call /pal_map_manager/change_map "input: '$1'"
+}
+
+alias snm='set-nav-mode'
+
+# Package compilation
+
+compile-cario-packages () {
+    catkin build cario* --no-deps
+    source /pal_mobile_base_ws/devel/setup.bash
+}
+
+alias cc="compile-cario-packages"
