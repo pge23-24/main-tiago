@@ -105,16 +105,19 @@ int main(int argc, char** argv)
     ros::Subscriber slam_loc_sub = nh.subscribe("/tf", 1, callback2);
 
 
-    ros::spin();
-    while (1) {
-        if (!gazebo_fifo.empty() && !tf_fifo.empty()) {
+    while (ros::ok()) {
+        ros::spinOnce();
+
+        while (!gazebo_fifo.empty() && !tf_fifo.empty()) {
             Data gazebo_data = gazebo_fifo.front();
             Data tf_data = tf_fifo.front();
             Data error = get_loc_error(gazebo_data, tf_data);
-            ROS_INFO("x: %f, y: %f, theta: %f", error.x, error.y, error.theta);
+            ROS_INFO("Localisation error : \n x: %f, y: %f, theta: %f", error.x, error.y, error.theta);
             gazebo_fifo.pop();
             tf_fifo.pop();
         }
+
+        // Sleep or rate control here if needed
     }
 
     return 0;
