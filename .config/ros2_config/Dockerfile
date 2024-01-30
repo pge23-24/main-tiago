@@ -39,9 +39,15 @@ RUN mkdir -p build && cd build \
     && cmake ../opencv-4.x \
     && cmake --build .
 
+## Install Ecal to Ros2 gateway
+## To run on the Conti machine
 
+## copy licenses and gateway
+COPY ~/Desktop/Fwk_licensed /ecalToRos2/Fwk_licensed
+COPY ~/Desktop/CES_FWK_Gateway_ecalToRos2 /ecalToRos2/CES_FWK_Gateway_ecalToRos2
 
-
-
-
+# rebuild the gateway
+RUN . /opt/ros/foxy/setup.bash \
+    && cd /ecalToRos2/CES_FWK_Gateway_ecalToRos2/CES_FWK_GATEWAY_ECALTOROS2/ \
+    && colcon build
 
