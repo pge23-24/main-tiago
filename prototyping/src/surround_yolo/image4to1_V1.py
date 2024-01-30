@@ -129,9 +129,9 @@ class Fuze:
 
 # Exemple d'utilisation
 if __name__ == "__main__":
-    folderImagesMires = "selected_img_mires"  # A remplir sur ordi conti
-    test_img_undistort = "selected_img_mires/image_1124.png"  # A remplir sur ordi conti
-    path_use_cases = "USE_CASE_1"  # A remplir sur ordi conti
+    folderImagesMires = "test_images_damien_stich/selected_img_mires"  # A remplir sur ordi conti
+    test_img_undistort = "test_images_damien_stich/selected_img_mires/image_1124.png"  # A remplir sur ordi conti
+    path_use_cases = "test_images_damien_stich/USE_CASE_1"  # A remplir sur ordi conti
     folder_save_undistort_and_stich = "undistort_and_stich"
 
     c = CvFunction()

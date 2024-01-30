@@ -85,7 +85,10 @@ class image4to1_V4():
 
                 # Stiching
                 # Ordre des images pour les cam : 4 1 3 2
+                start_time = time.time()
                 image_fusionnee = h.apply_homography(undistort_img4, undistort_img1, undistort_img3)
+                end_time = time.time()
+                print(end_time - start_time)
 
                 if not os.path.exists(os.path.join(folder_save, each_use_case)):
                     os.makedirs(os.path.join(folder_save, each_use_case))

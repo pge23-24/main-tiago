@@ -90,7 +90,7 @@ class Fuze:
 if __name__ == "__main__":
 
     folderImagesMires = "test_images_damien_stich/selected_img_mires"  # A remplir sur ordi conti
-    path_use_cases = "test_images_damien_stich/USE_CASE_1"  # A remplir sur ordi conti
+    path_use_cases = "test_images_damien_stich/USES_CASES/USE_CASE_1"  # A remplir sur ordi conti
     folder_save_undistort_and_stich = "test_images_damien_stich/resultats"  # A remplir sur ordi conti
     nb_img_in_use_case = 1  # A remplir
 
