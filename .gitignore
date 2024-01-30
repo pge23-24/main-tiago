@@ -56,7 +56,7 @@ COCO2017/
 *.zip
 
 # USE CASES
-*USE_CASE*
+*prototyping/USE_CASE*
 
 # Vscode cache
 *.vscode
