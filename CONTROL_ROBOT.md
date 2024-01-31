@@ -67,6 +67,14 @@ rosrun map_server map_saver -f <map_name>
 rosservice call /pal_map_manager/save_map "directory: ''"
 ```
 
+Les cartes sont stockées dans `.pal/pmb2_maps/configurations/`
+
+Récupération de la map :
+
+```bash
+scp -r pal@pmb2-46c:/home/pal/.pal/pmb2_maps/configurations/<map-name> /path/to/destination
+```
+
 Choisir la map active :
 
 ```bash
