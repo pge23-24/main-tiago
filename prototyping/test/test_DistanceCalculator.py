@@ -28,8 +28,8 @@ class TestDistanceCalculator(unittest.TestCase):
         )
 
     def test_compute_axis_size(self):
-        major_axis = self.calculator.compute_axis_size(0, 180, 300, True)
-        minor_axis = self.calculator.compute_axis_size(0, 180, 300, False)
+        major_axis = self.calculator.compute_axis_size(0, 180, 300, "person", True)
+        minor_axis = self.calculator.compute_axis_size(0, 180, 300, "person", False)
         self.assertGreater(major_axis, 0)
         self.assertGreater(minor_axis, 0)
         self.assertNotEqual(major_axis, minor_axis)
