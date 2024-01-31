@@ -25,7 +25,7 @@ src/pmb2_navigation
 src/eband_local_planner          
 src/pmb2_robot
 src/gazebo_ros_pkgs              
-src/pmb2_simulation
+# src/pmb2_simulation
 src/head_action                  
 src/roboticsgroup_gazebo_plugins
 src/hey5_description             
@@ -53,7 +53,7 @@ src/pal_motion_loader
 src/tiago_description_calibration
 src/pal_msgs                     
 src/tiago_moveit_config
-src/pal_navigation_cfg_public    
+# src/pal_navigation_cfg_public    
 src/tiago_navigation
 src/pal_navigation_sm            
 src/tiago_robot
