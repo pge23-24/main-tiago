@@ -58,7 +58,12 @@ class DistanceCalculator:
         return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
     def compute_axis_size(
-        self, theta_min_deg, theta_max_deg, bb_height, is_major_axis=True
+        self,
+        theta_min_deg,
+        theta_max_deg,
+        bb_height,
+        classification,
+        is_major_axis=True,
     ):
         """
         Compute the size of an axis (major or minor) of an ellipse with angles in degrees.
@@ -69,9 +74,12 @@ class DistanceCalculator:
         :param is_major_axis: Boolean flag to compute major axis if True, else minor axis
         :return: Size of the axis
         """
-        r_min = self.pixels_to_distance(bb_height, self.MIN_HUMAN_HEIGHT)
-        r_max = self.pixels_to_distance(bb_height, self.MAX_HUMAN_HEIGHT)
-
+        if classification == "person":
+            r_min = self.pixels_to_distance(bb_height, self.MIN_HUMAN_HEIGHT)
+            r_max = self.pixels_to_distance(bb_height, self.MAX_HUMAN_HEIGHT)
+        else:
+            r_min = 10e-6
+            r_max = 5.5
         if is_major_axis:
             theta_mean_deg = (theta_min_deg + theta_max_deg) / 2
             return self.distance_polar(r_min, theta_mean_deg, r_max, theta_mean_deg)
