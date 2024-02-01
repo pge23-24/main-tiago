@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 import rospy
 
 from receive_class_coordinates.msg import ClassCoordinates
 
 def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.angle)
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.angle) # cast to c
 
 
 def listener():
