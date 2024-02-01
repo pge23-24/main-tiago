@@ -119,6 +119,15 @@ class DistanceCalculator:
         covariance = (a**2 - b**2) * np.sin(theta) * np.cos(theta)
         return np.array([[sigma_x2, covariance], [covariance, sigma_y2]])
 
+    def centroid_distance(self, bb_height, classification):
+        if classification == "person":
+            r_min = self.pixels_to_distance(bb_height, self.MIN_HUMAN_HEIGHT)
+            r_max = self.pixels_to_distance(bb_height, self.MAX_HUMAN_HEIGHT)
+        else:
+            r_min = 10e-6
+            r_max = 5.5
+        return (r_min + r_max) / 2
+
 
 class YOLOv8Detector:
     def __init__(self):
@@ -211,6 +220,9 @@ class MinimalPublisher(Node):
                 bounding_box_height, angle_min, angle_max, class_name = self.toData(
                     result, class_names
                 )
+                distance_centroid = distance_calculator.centroid_distance(
+                    bb_height=bounding_box_height, classification=class_name
+                )
                 a = distance_calculator.compute_axis_size(
                     angle_min,
                     angle_max,
@@ -235,6 +247,7 @@ class MinimalPublisher(Node):
                     element for row in covariance_matrix for element in row
                 ]
                 informations.covariance_matrix = flattened_covariance_matrix
+                informations.centroid_distance = distance_centroid
                 self.publisher_information.publish(informations)
 
 

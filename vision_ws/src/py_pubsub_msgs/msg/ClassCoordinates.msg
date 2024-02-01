@@ -7,3 +7,5 @@ string classification
 float32 angle
 # Covariance matrix of the ellipse
 float32[4] covariance_matrix
+# Centroid of the ellipse
+float32 centroid_distance
