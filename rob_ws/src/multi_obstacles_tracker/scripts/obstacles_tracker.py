@@ -2,7 +2,10 @@
 import rospy
 import numpy as np
 import datetime
-from multi_obstacles_tracker_msgs.msg import ObstacleMeasureStampedArray, ObstacleMeasureStamped 
+from multi_obstacles_tracker_msgs.msg import ObstacleMeasureStampedArray 
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point32, Quaternion, Point
+from costmap_converter.msg import ObstacleMsg, ObstacleArrayMsg
 from stonesoup.predictor.kalman import KalmanPredictor
 from stonesoup.updater.kalman import KalmanUpdater
 from stonesoup.models.transition.linear import CombinedLinearGaussianTransitionModel, ConstantVelocity
@@ -129,14 +132,23 @@ class ObstaclesTracker:
             updater=self.updater,
         )
 
-        # subscribe to the topic /obstacles to get mean and cov of each detected obstacles
+        # subscribe to the topic /measures to get mean and cov of each detected obstacles
         rospy.Subscriber("/measures", ObstacleMeasureStampedArray, self.measuresCallback)
+
+        # Publish to the topic /obstacles
+        self.obstacles_array_msg_pub_ = rospy.Publisher("/obstacles", ObstacleArrayMsg, queue_size=1)
+
+        # Publish to the topic /viz_obstacles
+        self.viz_obstacles_array_msg_pub_ = rospy.Publisher("/viz_obstacles", Marker, queue_size=1)
         
         # spin it
         rospy.spin()
 
     def measuresCallback(self, measures):
-        time = datetime.datetime.utcfromtimestamp(measures.measures[0].header.stamp)
+        obstacles_array_msg = ObstacleArrayMsg()
+        viz_obstacles_array_msg = Marker()
+
+        time = datetime.datetime.fromtimestamp(measures.measures[0].header.stamp.secs + measures.measures[0].header.stamp.nsecs/10e6)
         detections = set()
 
         for measure in measures.measures:
@@ -145,7 +157,55 @@ class ObstaclesTracker:
             detections.add(detection)
             self.tracker.update(time, detections)
         
-        print(self.tracker.tracks)
+        viz_obstacles_array_msg.header = measures.measures[0].header
+        viz_obstacles_array_msg.ns = "multi_obstacles_tracker"
+        viz_obstacles_array_msg.id = 0
+        viz_obstacles_array_msg.type = Marker.POINTS
+        viz_obstacles_array_msg.action = Marker.ADD
+        viz_obstacles_array_msg.pose.position.x = 0
+        viz_obstacles_array_msg.pose.position.y = 0
+        viz_obstacles_array_msg.pose.position.z = 0
+        viz_obstacles_array_msg.color.a = 1
+        viz_obstacles_array_msg.color.r = 1
+        viz_obstacles_array_msg.color.g = 0.1
+        viz_obstacles_array_msg.color.b = 0.1
+        viz_obstacles_array_msg.scale.x = 0.35
+        viz_obstacles_array_msg.scale.y = 0.35
+
+        for track in self.tracker._tracks:
+            obstacle_msg = ObstacleMsg()
+            pos_point = Point32()
+
+            obstacle_msg.header = measures.measures[0].header
+
+            pos_point.x = track.state_vector[0]
+            pos_point.y = track.state_vector[2]
+            pos_point.z = 0
+            obstacle_msg.polygon.points.append(pos_point)
+
+            quat = Quaternion()
+            quat.x = 0
+            quat.y = 0
+            quat.z = 0
+            quat.w = 1
+            obstacle_msg.orientation = quat
+
+            obstacle_msg.velocities.twist.linear.x = track.state_vector[1]
+            obstacle_msg.velocities.twist.linear.y = track.state_vector[3]
+            obstacle_msg.velocities.twist.linear.z = 0
+            obstacle_msg.velocities.twist.angular.x = 0
+            obstacle_msg.velocities.twist.angular.y = 0
+            obstacle_msg.velocities.twist.angular.z = 0
+
+            obstacle_msg.radius = 0.1
+
+            obstacles_array_msg.obstacles.append(obstacle_msg)
+
+            viz_obstacles_array_msg.points.append(Point(track.state_vector[0], track.state_vector[2], 0))
+
+        if len(obstacles_array_msg.obstacles) > 0:
+            self.obstacles_array_msg_pub_.publish(obstacles_array_msg)
+            self.viz_obstacles_array_msg_pub_.publish(viz_obstacles_array_msg)
 
 if __name__ == "__main__":
     rospy.init_node('obstacles_tracker')

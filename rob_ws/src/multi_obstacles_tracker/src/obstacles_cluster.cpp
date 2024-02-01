@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 
-#include "multi_obstacles_tracker_msgs/ClusterStamped.h"
-#include "multi_obstacles_tracker_msgs/ClusterStampedArray.h"
+#include "multi_obstacles_tracker_msgs/ObstacleMeasureStamped.h"
+#include "multi_obstacles_tracker_msgs/ObstacleMeasureStampedArray.h"
 
 #include "sensor_msgs/PointCloud2.h"
 #include <sensor_msgs/point_cloud_conversion.h>
@@ -36,7 +36,7 @@ public:
     ObstaclesCluster(ros::NodeHandle n) : n_(n)
     {
         // publish to the /cluster topic
-        clusters_pub_ = n_.advertise<multi_obstacles_tracker_msgs::ClusterStampedArray>("/cluster", 10);
+        clusters_pub_ = n_.advertise<multi_obstacles_tracker_msgs::ObstacleMeasureStampedArray>("/measures", 10);
 
         // subscribe to the /scan_filtered topic
         cloud_sub_ = n_.subscribe<sensor_msgs::PointCloud2>("/scan_filtered", 10, &ObstaclesCluster::filteredScanCallback, this);
@@ -45,7 +45,7 @@ public:
     void filteredScanCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud_in)
     {
         // Convert the sensor_msgs::PointCloud2 to pcl::PointCloud<pcl::PointXYZ>
-        multi_obstacles_tracker_msgs::ClusterStampedArray clusters_msg;
+        multi_obstacles_tracker_msgs::ObstacleMeasureStampedArray measures_msg;
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::fromROSMsg(*cloud_in, *cloud);
 
@@ -56,7 +56,7 @@ public:
         std::vector<pcl::PointIndices> cluster_indices;
         pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
         ec.setClusterTolerance(0.6); // Set the tolerance for cluster creation
-        ec.setMinClusterSize(100);    // Set the minimum number of points a cluster should have
+        ec.setMinClusterSize(50);    // Set the minimum number of points a cluster should have
         ec.setMaxClusterSize(1000);   // Set the maximum number of points a cluster should have
         ec.setSearchMethod(tree);
         ec.setInputCloud(cloud);
@@ -71,50 +71,43 @@ public:
             for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); ++pit)
                 cluster->points.push_back(cloud->points[*pit]);
             
-            pcl::PointXYZ barycenterPoint;
-            pcl::PointXYZ upperLeftPoint;
-            pcl::PointXYZ lowerRightPoint;
-
-            // compute barycenter
-            for (const auto& point : cluster->points)
+            Eigen::Vector2f centroid;
+            centroid *= 0;
+            for(const auto& point : cluster->points)
             {
-                barycenterPoint.x += point.x;
-                barycenterPoint.y += point.y;
-                barycenterPoint.z += point.z;
+                centroid[0] += point.x;
+                centroid[1] += point.y;
             }
+            centroid /= cluster->points.size();
 
-            size_t clusterSize = cluster->points.size();
-            if (clusterSize > 0)
+            Eigen::Matrix2f covariance;
+            covariance *= 0;
+            for(const auto& point : cluster->points)
             {
-                barycenterPoint.x /= clusterSize;
-                barycenterPoint.y /= clusterSize;
-                barycenterPoint.z /= clusterSize;
+                Eigen::Vector2f e_point;
+                e_point << point.x, point.y;
+                covariance += (e_point - centroid)*(e_point - centroid).transpose();
             }
+            covariance /= (cluster->points.size() - 1);
 
-            // get min and max 3D point
-            pcl::getMinMax3D(*cluster, upperLeftPoint, lowerRightPoint);
+            // Create and fill the ObstacleMeasureStamped msg
+            multi_obstacles_tracker_msgs::ObstacleMeasureStamped measure_msg;
+            measure_msg.header = cloud_in->header;
 
-            // Create and fill the ClusterStamped msg
-            multi_obstacles_tracker_msgs::ClusterStamped cluster_msg;
-            cluster_msg.header = cloud_in->header;
+            measure_msg.mean[0] = centroid[0];
+            measure_msg.mean[1] = centroid[1];
 
-            cluster_msg.barycenter.x = barycenterPoint.x;
-            cluster_msg.barycenter.y = barycenterPoint.y;
-            cluster_msg.barycenter.z = barycenterPoint.z;
+            // fill cov matrix line by line
+            measure_msg.covariance[0] = covariance(0, 0);
+            measure_msg.covariance[1] = covariance(0, 1);
+            measure_msg.covariance[2] = covariance(1, 0);
+            measure_msg.covariance[3] = covariance(1, 1);
 
-            cluster_msg.upper_left_corner.x = upperLeftPoint.x;
-            cluster_msg.upper_left_corner.y = upperLeftPoint.y;
-            cluster_msg.upper_left_corner.z = upperLeftPoint.z;
-
-            cluster_msg.lower_right_corner.x = lowerRightPoint.x;
-            cluster_msg.lower_right_corner.y = lowerRightPoint.y;
-            cluster_msg.lower_right_corner.z = lowerRightPoint.z;
-
-            clusters_msg.clusters.push_back(cluster_msg);
+            measures_msg.measures.push_back(measure_msg);
         }
 
-        if(clusters_msg.clusters.size() > 0)
-            clusters_pub_.publish(clusters_msg);
+        if(measures_msg.measures.size() > 0)
+            clusters_pub_.publish(measures_msg);
     }
 };
 
