@@ -4,7 +4,7 @@
 
   <node name="obstacles_cluster" pkg="multi_obstacles_tracker" type="obstacles_cluster" output="screen"></node>
 
-  <node name="obstacles_tracker" pkg="multi_obstacles_tracker" type="obstacles_tracker" output="screen"></node>
+  <node name="obstacles_tracker" pkg="multi_obstacles_tracker" type="obstacles_tracker.py" output="screen"></node>
 
   <node name="cluster_viz" pkg="multi_obstacles_tracker" type="cluster_viz" output="screen"></node>
 

@@ -26,6 +26,8 @@ add_message_files(
   FILES
   ClusterStamped.msg
   ClusterStampedArray.msg
+  ObstacleMeasureStamped.msg
+  ObstacleMeasureStampedArray.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
