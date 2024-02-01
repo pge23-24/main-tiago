@@ -10,9 +10,7 @@
 
 #include <geometry_msgs/Point32.h>
 #include <geometry_msgs/Polygon.h>
-#include <geometry_msgs/QuaternionStamped.h>
 #include <geometry_msgs/Quaternion.h>
-#include <geometry_msgs/TwistWithCovariance.h>
 
 #include <tf/LinearMath/Quaternion.h>
 #include <tf/transform_datatypes.h>
@@ -27,6 +25,7 @@ int main(int argc, char* argv[]){
 
         // TO MODIFY
         ros::Publisher dyn_obstacles_pub = 
+        // nh.advertise<costmap_converter::ObstacleArrayMsg>("/obstacles", 1);
         nh.advertise<costmap_converter::ObstacleArrayMsg>("/test_optim_node/obstacles", 1);
 
         // dynamic obstacle core
