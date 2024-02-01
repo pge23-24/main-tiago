@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # Charger l'environnement ROS
-source install/setup.bash
+source /opt/ros/foxy/setup.bash
 
-# Construire le package spécifié
-colcon build --packages-select py_pubsub
+source install/setup.bash
 
 # Exécuter le noeud ROS avec l'argument de la caméra passé au script
 cam_id=$1

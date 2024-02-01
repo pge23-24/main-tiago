@@ -131,7 +131,7 @@ class YOLOv8Detector:
 
 
 class YOLOv5Detector:
-    def __init__(self, model_name="yolov5s"):
+    def __init__(self, model_name="yolov5l"):
         # Load YOLOv5 model
         self.model = torch.hub.load("ultralytics/yolov5", model_name, pretrained=True)
 

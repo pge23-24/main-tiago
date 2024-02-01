@@ -43,3 +43,14 @@ bash run_display.sh <num_cam>
 Les messages sont : 
 * angles et classes + header : py_pubsub_msgs.msg ClassCoordinates
 * l'image au format standard ROS : sensor_msgs.msg Image
+
+# Charger l'environnement ROS
+source /opt/ros/foxy/setup.bash
+
+# Construire le package spécifié
+```bash
+colcon build --packages-select py_pubsub_msgs --cmake-args -DPYTHON_EXECUTABLE=/usr/bin/python3
+colcon build --packages-select py_pubsub --cmake-args -DPYTHON_EXECUTABLE=/usr/bin/python3
+
+source install/setup.bash
+```

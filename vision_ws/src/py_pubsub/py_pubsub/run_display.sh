@@ -4,7 +4,8 @@
 source install/setup.bash
 
 # Construire le package spécifié
-colcon build --packages-select py_pubsub
+colcon build --packages-select py_pubsub --cmake-args -DPYTHON_EXECUTABLE=/usr/bin/python3
+colcon build --packages-select py_pubsub_msgs --cmake-args -DPYTHON_EXECUTABLE=/usr/bin/python3
 
 # Exécuter le noeud ROS avec l'argument de la caméra passé au script
 cam_id=${1:-1}

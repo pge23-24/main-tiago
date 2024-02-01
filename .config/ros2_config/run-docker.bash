@@ -12,8 +12,7 @@ docker run -it --rm \
     --net host \
     --ipc host \
     -e ROS_MASTER_URI=http://localhost:11311 \
-    -v ./vision_ws/src:/workspace/src \
-    -v ./../ContiEcal:/ContiEcal \
+    -v ./vision_ws:/workspace/ \
     cario360/ros2
 
 xhost -local:root
