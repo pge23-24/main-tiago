@@ -44,6 +44,12 @@ alias td='tiago-disconnect'
 
 alias rviz='roslaunch cario_rviz navigation.launch'
 alias gazebo='tiago-disconnect; roslaunch pmb2_gazebo pmb2_gazebo.launch'
+alias simu='tiago-disconnect; roslaunch pmb2_2dnav_gazebo pmb2_navigation.launch public_sim:=true'
+
+# Robot speed
+
+alias get-robot-max-speed="rosrun dynamic_reconfigure dynparam get /move_base/PalLocalPlanner"
+alias set-robot-max-speed="rosrun dynamic_reconfigure dynparam set /move_base/PalLocalPlanner max_vel_x"
 
 # Mapping
 
@@ -171,6 +177,17 @@ rviz
 
 gazebo
     Launch Gazebo with the cario configuration
+
+simu
+    Launch base simulation used for testing
+
+---
+
+get-robot-max-speed
+    Get the maximum speed of the robot
+
+set-robot-max-speed <speed>
+    Set the maximum speed of the robot
 
 ---
 
