@@ -1,4 +1,0 @@
-[console_scripts]
-camera_yolo = py_pubsub.camera_yolo:main
-display = py_pubsub.display:main
-
