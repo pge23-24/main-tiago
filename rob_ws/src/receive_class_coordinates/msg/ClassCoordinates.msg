@@ -6,5 +6,5 @@ string classification
 float32 angle
 # Covariance matrix of the ellipse
 float32[4] covariance_matrix
-
-#float32 centroide_distance
+# distance from the robot
+float32 centroide_distance
