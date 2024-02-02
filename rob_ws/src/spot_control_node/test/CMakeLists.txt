@@ -13,22 +13,16 @@ find_package(catkin REQUIRED COMPONENTS
 
 include_directories(${catkin_INCLUDE_DIRS})
 
-
-
-
 #############
 ## Testing ##
 #############
 find_package(rostest REQUIRED)
 
-
 ## Add gtest based cpp test target and link libraries
-
 if(CATKIN_ENABLE_TESTING)
-    catkin_add_gtest(error_loc-test error_loc_test.cpp)
-
-    target_link_libraries(error_loc-test ${PARENT_PROJECT_NAME}_loc_error_lib ${catkin_LIBRARIES})
-
+    catkin_add_gtest(${PROJECT_NAME}_test spot_control_test.cpp)
+    add_dependencies(${PROJECT_NAME}_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+    target_link_libraries(${PROJECT_NAME}_test ${PARENT_PROJECT_NAME}_spot_control_lib ${catkin_LIBRARIES})
 endif()
 
 ## Add folders to be run by python nosetests
