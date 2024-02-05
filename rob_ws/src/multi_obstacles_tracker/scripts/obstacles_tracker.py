@@ -6,8 +6,8 @@ from multi_obstacles_tracker_msgs.msg import ObstacleMeasureStampedArray
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point32, Quaternion, Point
 from costmap_converter.msg import ObstacleMsg, ObstacleArrayMsg
-from stonesoup.predictor.kalman import KalmanPredictor
-from stonesoup.updater.kalman import KalmanUpdater
+from stonesoup.predictor.kalman import KalmanPredictor, UnscentedKalmanPredictor, ExtendedKalmanPredictor
+from stonesoup.updater.kalman import KalmanUpdater, UnscentedKalmanUpdater, ExtendedKalmanUpdater
 from stonesoup.models.transition.linear import CombinedLinearGaussianTransitionModel, ConstantVelocity
 from stonesoup.models.measurement.linear import LinearGaussian
 from stonesoup.hypothesiser.distance import DistanceHypothesiser
@@ -50,6 +50,7 @@ class RTMultiTargetTracker(Tracker):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._tracks = set()
+        self._last_association = {}
 
     @property
     def tracks(self):
@@ -70,8 +71,7 @@ class RTMultiTargetTracker(Tracker):
         raise NotImplementedError
 
     def update(self, time, detections):
-        associations = self.data_associator.associate(
-            self.tracks, detections, time)
+        associations = self.data_associator.associate(self.tracks, detections, time)
         associated_detections = set()
         for track, hypothesis in associations.items():
             if hypothesis:
@@ -81,16 +81,32 @@ class RTMultiTargetTracker(Tracker):
             else:
                 track.append(hypothesis.prediction)
 
-        self._tracks -= self.deleter.delete_tracks(self.tracks)
-        self._tracks |= self.initiator.initiate(
-            detections - associated_detections, time)
+        to_del_tracks = self.deleter.delete_tracks(self.tracks)
+        for track in to_del_tracks:
+            del self._last_association[track.id]
+        self._tracks -= to_del_tracks
+
+        self._tracks |= self.initiator.initiate(detections - associated_detections, time)
+
+        for track in self._tracks:
+            chosen_track = 0
+            chosen_detection = None
+            min_score = None
+            for detection in detections:
+                score = np.linalg.norm(np.array([[track.state_vector[0]], [track.state_vector[2]]]) - detection.state_vector)
+                if min_score is None or score < min_score:
+                    chosen_detection = detection
+                    chosen_track = track.id
+                    min_score = score
+            if min_score < 0.1:   
+                self._last_association[chosen_track] = chosen_detection
 
         return time, self.tracks
     
 class ObstaclesTracker:
     def __init__(self) -> None:
         # get constant velocity model as transition model of each kalman filter
-        self.transition_model = CombinedLinearGaussianTransitionModel([ConstantVelocity(0.05), ConstantVelocity(0.05)])
+        self.transition_model = CombinedLinearGaussianTransitionModel([ConstantVelocity(0.1), ConstantVelocity(0.1)])
 
         # get measurement model
         self.measurement_model = LinearGaussian(4, [0, 2], np.diag([0.25, 0.25]))
@@ -108,11 +124,11 @@ class ObstaclesTracker:
         self.data_associator = GNNWith2DAssignment(self.hypothesiser)
 
         # get deleter
-        self.deleter = CovarianceBasedDeleter(covar_trace_thresh=2)
+        self.deleter = CovarianceBasedDeleter(covar_trace_thresh=3)
 
         # get initiator
-        s_prior_state = GaussianState([[0], [0], [0], [0]], np.diag([0, 0.5, 0, 0.5]))
-        min_detections = 3
+        s_prior_state = GaussianState([[0], [0], [0], [0]], np.diag([0.1, 1, 0.1, 1]))
+        min_detections = 1
 
         self.initiator = MultiMeasurementInitiator(
             prior_state=s_prior_state,
@@ -150,17 +166,16 @@ class ObstaclesTracker:
 
         time = datetime.datetime.fromtimestamp(measures.measures[0].header.stamp.secs + measures.measures[0].header.stamp.nsecs/10e6)
         detections = set()
-
         for measure in measures.measures:
             measurement_model = LinearGaussian(ndim_state=4, mapping=(0, 2), noise_covar=np.array([[measure.covariance[0], measure.covariance[1]], [measure.covariance[2], measure.covariance[3]]]))
             detection = Detection(state_vector=np.array([[measure.mean[0]], [measure.mean[1]]]), timestamp=time, measurement_model=measurement_model)
             detections.add(detection)
-            self.tracker.update(time, detections)
+        self.tracker.update(time, detections)
         
         viz_obstacles_array_msg.header = measures.measures[0].header
         viz_obstacles_array_msg.ns = "multi_obstacles_tracker"
         viz_obstacles_array_msg.id = 0
-        viz_obstacles_array_msg.type = Marker.POINTS
+        viz_obstacles_array_msg.type = Marker.LINE_LIST
         viz_obstacles_array_msg.action = Marker.ADD
         viz_obstacles_array_msg.pose.position.x = 0
         viz_obstacles_array_msg.pose.position.y = 0
@@ -169,19 +184,64 @@ class ObstaclesTracker:
         viz_obstacles_array_msg.color.r = 1
         viz_obstacles_array_msg.color.g = 0.1
         viz_obstacles_array_msg.color.b = 0.1
-        viz_obstacles_array_msg.scale.x = 0.35
-        viz_obstacles_array_msg.scale.y = 0.35
+        viz_obstacles_array_msg.scale.x = 0.05
 
         for track in self.tracker._tracks:
+            print("============================")
+            tr = 0
+            for i in range(4):
+                tr += np.abs(track.covar[i, i])
+            print(track.id, tr)
             obstacle_msg = ObstacleMsg()
-            pos_point = Point32()
 
             obstacle_msg.header = measures.measures[0].header
 
-            pos_point.x = track.state_vector[0]
-            pos_point.y = track.state_vector[2]
-            pos_point.z = 0
-            obstacle_msg.polygon.points.append(pos_point)
+            a = self.tracker._last_association[track.id].measurement_model.noise_covar[0, 0]
+            b = self.tracker._last_association[track.id].measurement_model.noise_covar[0, 1]
+            c = self.tracker._last_association[track.id].measurement_model.noise_covar[1, 0]
+            
+            lambda_1 = np.abs((a+c)/2 + np.sqrt(((a-c)**2)/4 + b**2))
+            lambda_2 = np.abs((a+c)/2 - np.sqrt(((a-c)**2)/4 + b**2))
+            theta = 0
+            if b == 0 and a >= c:
+                theta = 0
+            elif b == 0 and a < c:
+                theta = np.pi/2
+            else:
+                theta = np.arctan2(lambda_1-a, b)
+            
+            OA = 1.96 * np.sqrt(lambda_1) * np.array([np.cos(theta), np.sin(theta)])
+            OB = 1.96 * np.sqrt(lambda_2) * np.array([np.sin(theta), -np.cos(theta)])
+
+            A1 = OA + OB
+            A2 = OA - OB
+            A3 = -OA - OB
+            A4 = -OA + OB
+
+            A_1_pos_point = Point32()
+            A_1_pos_point.x = track.state_vector[0] + A1[0] 
+            A_1_pos_point.y = track.state_vector[2] + A1[1]
+            A_1_pos_point.z = 0
+
+            A_2_pos_point = Point32()
+            A_2_pos_point.x = track.state_vector[0] + A2[0]
+            A_2_pos_point.y = track.state_vector[2] + A2[1]
+            A_2_pos_point.z = 0
+
+            A_3_pos_point = Point32()
+            A_3_pos_point.x = track.state_vector[0] + A3[0]
+            A_3_pos_point.y = track.state_vector[2] + A3[1]
+            A_3_pos_point.z = 0
+
+            A_4_pos_point = Point32()
+            A_4_pos_point.x = track.state_vector[0] + A4[0]
+            A_4_pos_point.y = track.state_vector[2] + A4[1]
+            A_4_pos_point.z = 0
+
+            obstacle_msg.polygon.points.append(A_1_pos_point)
+            obstacle_msg.polygon.points.append(A_2_pos_point)
+            obstacle_msg.polygon.points.append(A_3_pos_point)
+            obstacle_msg.polygon.points.append(A_4_pos_point)
 
             quat = Quaternion()
             quat.x = 0
@@ -197,11 +257,18 @@ class ObstaclesTracker:
             obstacle_msg.velocities.twist.angular.y = 0
             obstacle_msg.velocities.twist.angular.z = 0
 
-            obstacle_msg.radius = 0.1
+            obstacle_msg.radius = 2
 
             obstacles_array_msg.obstacles.append(obstacle_msg)
 
-            viz_obstacles_array_msg.points.append(Point(track.state_vector[0], track.state_vector[2], 0))
+            viz_obstacles_array_msg.points.append(A_1_pos_point)
+            viz_obstacles_array_msg.points.append(A_2_pos_point)
+            viz_obstacles_array_msg.points.append(A_2_pos_point)
+            viz_obstacles_array_msg.points.append(A_3_pos_point)
+            viz_obstacles_array_msg.points.append(A_3_pos_point)
+            viz_obstacles_array_msg.points.append(A_4_pos_point)
+            viz_obstacles_array_msg.points.append(A_4_pos_point)
+            viz_obstacles_array_msg.points.append(A_1_pos_point)
 
         if len(obstacles_array_msg.obstacles) > 0:
             self.obstacles_array_msg_pub_.publish(obstacles_array_msg)
