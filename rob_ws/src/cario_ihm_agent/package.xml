@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>spot_control_node</name>
+  <name>cario_ihm_agent</name>
   <version>1.0.0</version>
   <description>Spot control for cario via ROS and serial communication</description>
 
