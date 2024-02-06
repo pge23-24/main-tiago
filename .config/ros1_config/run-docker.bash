@@ -19,6 +19,7 @@ docker run -it --rm \
     --ipc host \
     --pid host \
     -v ./rob_ws/src:/pal_mobile_base_ws/src/pge_packages \
+    --device /dev/ttyACM0 \
     cario360/ros-tiago:latest
 
 xhost -local:root
