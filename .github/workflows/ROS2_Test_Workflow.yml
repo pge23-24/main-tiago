@@ -1,0 +1,50 @@
+name: ROS2 Test Workflow
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  WORKSPACE: "vision_ws"
+  ROS_DISTRO: "foxy"
+  BLACKLIST: "py_pubsub"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    container:
+      image: cario360/ros2
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Setup ROS Environment
+      run: |
+        echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> ~/.bashrc
+        source ~/.bashrc
+      shell: bash
+
+    - name: Install Dependencies
+      run: |
+        apt-get update
+        apt-get install -y python3-colcon-common-extensions
+      shell: bash
+
+    - name: Build
+      run: |
+        cd $WORKSPACE
+        source /opt/ros/$ROS_DISTRO/setup.bash
+        colcon build --packages-skip $BLACKLIST
+      shell: bash
+
+    - name: Run Tests
+      run: |
+        source /opt/ros/$ROS_DISTRO/setup.bash
+        cd $WORKSPACE
+        colcon test --packages-skip $BLACKLIST
+        colcon test-result --all
+      shell: bash
