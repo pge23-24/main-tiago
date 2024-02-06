@@ -114,3 +114,7 @@ build*
 *.exe
 *.out
 *.app
+
+# Conti Licence and software
+*CES_FWK_Gateway_ecalToRos2/
+*Fwk_licensed/
