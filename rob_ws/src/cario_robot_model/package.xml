@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>cario_static</name>
-  <version>0.0.0</version>
+  <name>cario_robot_model</name>
+  <version>0.2.0</version>
   <description>Simulation files for the PMB2 robot with 360 cameras.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/cario_static</url> -->
+  <!-- <url type="website">http://wiki.ros.org/cario_robot_model</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -32,7 +32,6 @@
   <!-- Dependencies can be catkin packages or system dependencies -->
   <!-- Examples: -->
   <!-- Use depend as a shortcut for packages that are both build and exec dependencies -->
-  <!--   <depend>roscpp</depend> -->
   <!--   Note that this is equivalent to the following: -->
   <!--   <build_depend>roscpp</build_depend> -->
   <!--   <exec_depend>roscpp</exec_depend> -->
@@ -76,6 +75,12 @@
   <exec_depend>pmb2_controller_configuration_gazebo</exec_depend>
   <exec_depend>pmb2_description</exec_depend>
   <exec_depend>simple_models_gazebo</exec_depend>
+
+  <!-- For get_map service -->
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <exec_depend>std_srvs</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
