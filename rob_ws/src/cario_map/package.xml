@@ -16,6 +16,7 @@
   <license>TODO</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslint</build_depend>
 
   <!-- For get_map service -->
   <depend>roscpp</depend>

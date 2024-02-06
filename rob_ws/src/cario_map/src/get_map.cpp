@@ -22,8 +22,8 @@ class MapServiceNode {
     ROS_INFO("Map service ready !");
   }
 
-  bool GetMapInfoCallback(const cario_map::GetMapInfo::Request& req,
-                          cario_map::GetMapInfo::Response* res) {
+  bool GetMapInfoCallback(cario_map::GetMapInfo::Request& req,
+                          cario_map::GetMapInfo::Response& res) {
     // Path to your local .pgm file
     std::string yamlFilePath = pkg_root + "/maps/workshop/usine_v2.yaml";
     std::string pgmFilePath = pkg_root + "/maps/workshop/usine_v2.pgm";

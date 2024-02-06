@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(cario_map)
 
-find_package(catkin REQUIRED COMPONENTS roscpp roslib std_msgs sensor_msgs
-                                        message_generation)
+find_package(catkin REQUIRED COMPONENTS roslint roscpp roslib std_msgs
+                                        sensor_msgs message_generation)
+
+roslint_cpp()
 
 add_service_files(FILES GetMapInfo.srv)
 
