@@ -1,7 +1,7 @@
 <launch>
   <arg name="robot_speed" default="0.2"/>
 
-  <include file="$(find cario_static)/launch/upload.launch">
+  <include file="$(find cario_robot_model)/launch/upload.launch">
     <arg name="laser_model"   default="sick-571"/>
     <arg name="rgbd_sensors"  default="false"/>
   </include>
@@ -10,7 +10,14 @@
     name="dyn_reconfigure"
     pkg="dynamic_reconfigure"
     type="dynparam"
-    args="set /move_base/PalLocalPlanner max_vel_x $(arg robot_speed)"
+    args="set /move_base/TebLocalPlannerROS max_vel_x $(arg robot_speed)"
+    />
+
+  <node
+    name="dyn_reconfigure_obstacle"
+    pkg="dynamic_reconfigure"
+    type="dynparam"
+    args="set /move_base/global_costmap/obstacle_laser_layer enabled false"
     />
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />

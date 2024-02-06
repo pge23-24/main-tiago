@@ -5,7 +5,7 @@
 
   <!-- Robot description -->
   <param name="robot_description"
-      command="xacro '$(find cario_static)/urdf/cario.urdf.xacro'
+      command="xacro '$(find cario_robot_model)/urdf/cario.urdf.xacro'
     laser_model:=$(arg laser_model)
     rgbd_sensors:=$(arg rgbd_sensors)
     $(arg multi)"

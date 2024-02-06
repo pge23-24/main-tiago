@@ -18,7 +18,7 @@
 		<link name="plateform_link">
 			<visual>
 				<geometry>
-					<mesh filename="package://cario_static/urdf/robot_top_V1.stl"/>
+					<mesh filename="package://cario_robot_model/urdf/robot_top_V1.stl"/>
 				</geometry>
 				<material name="white"/>
 			</visual>

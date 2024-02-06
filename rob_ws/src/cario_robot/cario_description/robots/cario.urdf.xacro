@@ -56,7 +56,7 @@
   <xacro:camera name="camera_03" parent_link="base_link" pose_offset="0.0 0.2894102 0.6097676" orientation="-${pi/2} 0.0 0.0" />
   <xacro:camera name="camera_04" parent_link="base_link" pose_offset="0.0 -0.2894102 0.6097676" orientation="${pi/2} 0.0 0.0" /> -->
 
-  <xacro:include filename="$(find cario_static)/urdf/plateform.xacro" />
+  <xacro:include filename="$(find cario_robot_model)/urdf/plateform.xacro" />
   <xacro:plateform name="plateform" base_link="base_link" />
 
 </robot>
