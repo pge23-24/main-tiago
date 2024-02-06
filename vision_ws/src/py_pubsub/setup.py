@@ -21,6 +21,7 @@ setup(
         "console_scripts": [
             "display = py_pubsub.display:main",
             "camera_yolo = py_pubsub.camera_yolo:main",
+            "test_connection = py_pubsub.test_connection:main",
         ],
     },
 )
