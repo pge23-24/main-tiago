@@ -142,7 +142,11 @@ class YOLOv8Detector:
 class YOLOv5Detector:
     def __init__(self, model_name="yolov5l"):
         # Load YOLOv5 model
-        self.model = torch.hub.load("ultralytics/yolov5", model_name, pretrained=True)
+        self.model = torch.hub.load(
+            "ultralytics/yolov5",
+            "custom",
+            path="yolv5l_custom.pt",
+        )
 
     def compute(self, image):
         """Process a single image"""
@@ -170,7 +174,7 @@ class MinimalPublisher(Node):
             Image, f"Cam{camera_id}/image_raw", self.listener_callback, 10
         )
         self._cv_bridge = CvBridge()
-        self.detector = YOLOv8Detector()
+        self.detector = YOLOv5Detector()
 
     def toData(self, result, classes):
         bounding_box_height = result[3] - result[1]
@@ -203,14 +207,14 @@ class MinimalPublisher(Node):
         if results:
             # Annotated image part
             """if self.detector.type() == YOLOv8Detector:"""
-            annotated_image = results[0].plot()
+            # annotated_image = results[0].plot()
             """elif self.detector.type() == YOLOv5Detector:"""
-            """annotated_image = results.render()[0]"""
+            annotated_image = results.render()[0]
             encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
                 annotated_image, "rgb8"
             )
             self.publisher_annotated_image.publish(encoded_annotated_image)
-            new_results = results[0].boxes.data.cpu().tolist()
+            """new_results = results[0].boxes.data.cpu().tolist()
             class_names = results[0].names  # Assuming this is how you get class names
             distance_calculator = DistanceCalculator()
             for result in new_results:
@@ -248,7 +252,7 @@ class MinimalPublisher(Node):
                 ]
                 informations.covariance_matrix = flattened_covariance_matrix
                 informations.centroid_distance = distance_centroid
-                self.publisher_information.publish(informations)
+                self.publisher_information.publish(informations)"""
 
 
 def main(args=None):
