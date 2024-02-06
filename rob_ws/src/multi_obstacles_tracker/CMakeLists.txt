@@ -46,6 +46,9 @@ DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 catkin_install_python(PROGRAMS scripts/obstacles_cluster.py
 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
+catkin_install_python(PROGRAMS scripts/local_costmap_inflation.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 ## Declare a C++ executable
 add_executable(scan_filter src/scan_filter.cpp)
 add_executable(cluster_viz src/cluster_viz.cpp)

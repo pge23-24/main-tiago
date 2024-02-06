@@ -6,6 +6,7 @@ from multi_obstacles_tracker_msgs.msg import ObstacleMeasureStampedArray
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point32, Quaternion, Point
 from costmap_converter.msg import ObstacleMsg, ObstacleArrayMsg
+import tf
 from stonesoup.predictor.kalman import KalmanPredictor, UnscentedKalmanPredictor, ExtendedKalmanPredictor
 from stonesoup.updater.kalman import KalmanUpdater, UnscentedKalmanUpdater, ExtendedKalmanUpdater
 from stonesoup.models.transition.linear import CombinedLinearGaussianTransitionModel, ConstantVelocity
@@ -98,24 +99,23 @@ class RTMultiTargetTracker(Tracker):
                     chosen_detection = detection
                     chosen_track = track.id
                     min_score = score
-            if min_score < 0.1:   
-                self._last_association[chosen_track] = chosen_detection
+            self._last_association[chosen_track] = chosen_detection
 
         return time, self.tracks
     
 class ObstaclesTracker:
     def __init__(self) -> None:
         # get constant velocity model as transition model of each kalman filter
-        self.transition_model = CombinedLinearGaussianTransitionModel([ConstantVelocity(0.1), ConstantVelocity(0.1)])
+        self.transition_model = CombinedLinearGaussianTransitionModel([ConstantVelocity(0.5), ConstantVelocity(0.5)])
 
         # get measurement model
         self.measurement_model = LinearGaussian(4, [0, 2], np.diag([0.25, 0.25]))
 
         # get kalman predictor model
-        self.predictor = KalmanPredictor(self.transition_model)
+        self.predictor = ExtendedKalmanPredictor(self.transition_model)
 
         # get kalman updater model
-        self.updater = KalmanUpdater(self.measurement_model)
+        self.updater = ExtendedKalmanUpdater(self.measurement_model)
 
         # get hypothesiser
         self.hypothesiser = DistanceHypothesiser(self.predictor, self.updater, measure=Mahalanobis(), missed_distance=3)
@@ -187,11 +187,14 @@ class ObstaclesTracker:
         viz_obstacles_array_msg.scale.x = 0.05
 
         for track in self.tracker._tracks:
-            print("============================")
-            tr = 0
-            for i in range(4):
-                tr += np.abs(track.covar[i, i])
-            print(track.id, tr)
+            listener = tf.TransformListener()
+
+            try:
+                (trans, rot) = listener.lookupTransform('base_link', 'map', rospy.Time.from_sec(measures.measures[0].header.stamp.to_sec()))
+                print(trans, rot)
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
+                print(e.msg)
+                continue
             obstacle_msg = ObstacleMsg()
 
             obstacle_msg.header = measures.measures[0].header
