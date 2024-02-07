@@ -1,4 +1,4 @@
-from prototyping.src.surround_yolo.image4to1 import CvFunction, Fuze
+from prototyping.src.surround_yolo.image4to1_V3 import CvFunction, Fuze
 import unittest
 from unittest.mock import patch, mock_open
 import numpy as np
