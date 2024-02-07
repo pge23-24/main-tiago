@@ -3,4 +3,4 @@
 #/ Time of sensor data acqusition, coordinate frame ID.
 std_msgs/Header header
 #/ Array of clusters
-ClassCoordinates[] detections
+CameraDetectionStamped[] detections
