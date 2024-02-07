@@ -25,6 +25,7 @@ find_package(geometry_msgs REQUIRED)
 # Add custom message files
 set(msg_files
   "msg/ClassCoordinates.msg"
+  "msg/ClassCoordinatesArray.msg"
 )
 
 # Generate message code

@@ -11,6 +11,7 @@ import time
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
 from py_pubsub_msgs.msg import ClassCoordinates
+from py_pubsub_msgs.msg import ClassCoordinatesArray
 from py_pubsub.distance_calculator import DistanceCalculator
 
 CAMERA_ANGLE = 190
@@ -76,7 +77,7 @@ class MinimalPublisher(Node):
 
         self.topic_name_information = f"information_{camera_id}"
         self.publisher_information = self.create_publisher(
-            ClassCoordinates, self.topic_name_information, 10
+            ClassCoordinatesArray, self.topic_name_information, 10
         )
 
         self.subscription = self.create_subscription(
@@ -204,25 +205,31 @@ class MinimalPublisher(Node):
             self.publisher_annotated_image.publish(encoded_annotated_image)
 
             distance_calculator = DistanceCalculator()
+            info_array = ClassCoordinatesArray()
+            info_array.header.stamp = self.get_clock().now().to_msg()
             for result in new_results:
                 # Informations part
                 informations = ClassCoordinates()
-                informations.header.stamp = self.get_clock().now().to_msg()
+                informations.header = info_array.header
 
                 covariance_matrix, distance_centroid, theta_moy, class_name = (
                     distance_calculator.covariance_matrix_from_data(
                         self.toData(result, class_names)
                     )
                 )
-
-                informations.classification = class_name
-                informations.angle = theta_moy
                 flattened_covariance_matrix = [
                     element for row in covariance_matrix for element in row
                 ]
-                informations.covariance_matrix = flattened_covariance_matrix
-                informations.centroid_distance = distance_centroid
-                self.publisher_information.publish(informations)
+
+
+                informations.classification = class_name
+                informations.coordinates = [distance_centroid, theta_moy]
+
+                informations.covariance = flattened_covariance_matrix
+                
+                info_array.detections.append(informations)
+
+            self.publisher_information.publish(info_array)
         end = time.time()
         t = end - start
         self.get_logger().info(f"Time : {t}")

@@ -1,11 +1,12 @@
-# This message is used to send the angle of a detected class
-# Timestamp
+#/ This message holds informations of a camera's detection.
+#/ Time of sensor data acqusition, coordinate frame ID.
 std_msgs/Header header
-# Class name
+
+#/ Class of the detection
 string classification
-# Angle of the detected class
-float32 angle
-# Covariance matrix of the ellipse
-float32[4] covariance_matrix
-# Centroid of the ellipse
-float32 centroid_distance
+
+#/ Polar coordinates (rho, theta) of the detection in the frame given in the header.
+float32[2] coordinates
+
+#/ Statistical covariance of the detection in the frame given in the header.
+float32[4] covariance
