@@ -42,8 +42,11 @@
 # Pycache
 *.pyc
 
-# Log folder
-*log*
+# generated folder
+log/
+logs/
+install/
+build/
 
 # COCO dataset
 COCO_2017/
@@ -78,10 +81,6 @@ assets
 *mire*
 *stitchong*
 *temp*
-
-# CPP files
-*/cpp_translation/build/*
-build*
 
 *.d
 
