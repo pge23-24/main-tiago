@@ -85,12 +85,12 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
   switch (mat_state) {
     case IDLE_NAV:
       if (joy_actif) {
-        ROS_INFO("Joystick active, Orange mat turns ON");
+        ROS_INFO("Joystick active, ORANGE mat turns ON");
         write(this->serial, MAT_GREEN_OFF, 1);
         write(this->serial, MAT_ORANGE_ON, 1);
         mat_state = MANUAL;
       } else if (recovery_actif) {
-        ROS_INFO("Recovery active, red mat turns ON");
+        ROS_INFO("Recovery active, RED mat turns ON");
         write(this->serial, MAT_GREEN_OFF, 1);
         write(this->serial, MAT_RED_ON, 1);
         mat_state = RECOVERY;
@@ -99,12 +99,12 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
     
     case MANUAL:
       if (!joy_actif && !recovery_actif) {
-        ROS_INFO("Joystick inactive, Orange mat turns OFF");
+        ROS_INFO("Joystick inactive, ORANGE mat turns OFF");
         write(this->serial, MAT_ORANGE_OFF, 1);
         write(this->serial, MAT_GREEN_ON, 1);
         mat_state = IDLE_NAV;
       } else if (!joy_actif && recovery_actif) {
-        ROS_INFO("Recovery active, red mat turns ON");
+        ROS_INFO("Recovery active, RED mat turns ON");
         write(this->serial, MAT_ORANGE_OFF, 1);
         write(this->serial, MAT_RED_ON, 1);
         mat_state = RECOVERY;
@@ -113,12 +113,12 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
 
     case RECOVERY:
       if (!recovery_actif) {
-        ROS_INFO("Recovery inactive, Red mat turns OFF");
+        ROS_INFO("Recovery inactive, RED mat turns OFF");
         write(this->serial, MAT_RED_OFF, 1);
         write(this->serial, MAT_GREEN_ON, 1);
         mat_state = IDLE_NAV;
       } else if (joy_actif) {
-        ROS_INFO("Joystick active, Orange mat turns ON");
+        ROS_INFO("Joystick active, ORANGE mat turns ON");
         write(this->serial, MAT_RED_OFF, 1);
         write(this->serial, MAT_ORANGE_ON, 1);
         mat_state = MANUAL;
