@@ -16,7 +16,7 @@ class ImageDisplayNode(Node):
             Image, self.topic_name, self.listener_callback, 10
         )
         self._cv_bridge = CvBridge()
-        self.record_image_path = "/media/pge-2023/DDE DORIAN/PGE/video_1/"
+        self.record_image_path = "/media/pge-2023/DDE DORIAN/PGE/video_2/"
         self.i = 0
 
     def listener_callback(self, image):
