@@ -14,7 +14,8 @@ docker run -it --rm \
     --gpus all \
     --device /dev/nvidia0 \
     -e ROS_MASTER_URI=http://localhost:11311 \
-    -v ./vision_ws:/workspace \
+    -v ./vision_ws/src:/workspace/src \
+    -v ./vision_ws/scripts:/workspace/scripts \
     cario360/ros2
 
 xhost -local:root

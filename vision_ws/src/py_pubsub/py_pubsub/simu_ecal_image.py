@@ -12,7 +12,7 @@ class MinimalPublisher(Node):
         super().__init__("simu_pub")
         self.publisher = self.create_publisher(Image, "Cam1/image_raw", 10)
         self._cv_bridge = CvBridge()
-        self.cv_image = cv2.imread("src/cario_image.png")
+        self.cv_image = cv2.imread("src/py_pubsub/resource/cario_image.png")
         self.timer_rate = self.create_rate(20)
 
     def publish(self):
