@@ -1,4 +1,4 @@
-sudo ../Fwk_licensed/CES_QtFramework_Application &
+sudo /Fwk_licensed/CES_QtFramework_Application &
 
 cd /CES_FWK_Gateway_ecalToRos2/CES_FWK_GATEWAY_ECALTOROS2/
 . ./install/setup.bash 

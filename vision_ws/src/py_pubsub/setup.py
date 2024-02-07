@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 package_name = "py_pubsub"
 
 setup(

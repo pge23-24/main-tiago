@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 from cv_bridge import CvBridge
 import cv2
 import argparse
@@ -8,6 +9,11 @@ from ultralytics import YOLO  # YOLOv8 import
 from ultralytics.utils import LOGGER  # LOGGER import
 from rclpy.utilities import remove_ros_args
 import sys
+import torch
+from py_pubsub_msgs.msg import ClassCoordinates
+import numpy as np
+import math
+from scipy.interpolate import interp1d
 
 
 class YOLODetector:
