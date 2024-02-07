@@ -93,7 +93,7 @@ RUN /bin/bash -c "source /opt/ros/foxy/setup.bash \
 ##################################
 
 ## Python dependencies
-RUN pip install ultralytics \
+RUN pip3 install ultralytics \
                 opencv-python \
                 pillow \
                 pywavefront \
@@ -103,7 +103,8 @@ RUN pip install ultralytics \
                 numpy==1.24.4 \
                 lapx==0.5.2 \
                 gitpython==3.1.30 \
-                setuptools==65.5.1
+                setuptools==65.5.1 \
+                deep-sort-realtime
 
 ## C++ dependencies
 ### +++ OpenCV +++ ###

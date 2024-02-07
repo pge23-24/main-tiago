@@ -7,8 +7,10 @@ import argparse
 from ultralytics import YOLO  # YOLOv8 import
 from ultralytics.utils import LOGGER  # LOGGER import
 import torch
-from py_pubsub_msgs.msg import ClassCoordinates
+import time
+from deep_sort_realtime.deepsort_tracker import DeepSort
 
+from py_pubsub_msgs.msg import ClassCoordinates
 from py_pubsub.distance_calculator import DistanceCalculator
 
 CAMERA_ANGLE = 190
@@ -35,7 +37,7 @@ class YOLOv8Detector:
 class YOLOv5Detector:
     type = "YOLOv5"
 
-    def __init__(self, model_name="{models_path}/yolov5l.pt"):
+    def __init__(self, model_name=f"{models_path}/yolov5l.pt"):
         # Load YOLOv5 model
         try:
             self.model = torch.hub.load(
@@ -61,10 +63,10 @@ class YOLOv5Detector:
 
 
 class MinimalPublisher(Node):
-    def __init__(self, camera_id, yolo_version):
+    def __init__(self, camera_id, yolo_version, tracker_enabled):
         super().__init__("minimal_publisher")
         self.camera_id = camera_id
-
+        self.tracker_enabled = tracker_enabled
         self.topic_name_image = f"annotated_images_{camera_id}"
         self.publisher_annotated_image = self.create_publisher(
             Image, self.topic_name_image, 10
@@ -83,6 +85,27 @@ class MinimalPublisher(Node):
             self.detector = YOLOv8Detector()
         elif yolo_version == "v5":
             self.detector = YOLOv5Detector()
+
+        if tracker_enabled:
+            self.tracker = DeepSort(
+                max_age=5,
+                n_init=2,
+                nms_max_overlap=1.0,
+                max_cosine_distance=0.3,
+                nn_budget=None,
+                override_track_class=None,
+                embedder="mobilenet",
+                half=True,
+                bgr=True,
+                embedder_gpu=True,
+                embedder_model_name=None,
+                embedder_wts=None,
+                polygon=False,
+                today=None,
+            )
+        self.get_logger().info(
+            f"Camera {camera_id} YOLO{yolo_version} Tracker {tracker_enabled} Node has started"
+        )
 
     def toData(self, result, classes):
         bounding_box_height = result[3] - result[1]
@@ -104,7 +127,25 @@ class MinimalPublisher(Node):
 
         return bounding_box_height, angle_min % 360, angle_max % 360, class_name
 
+    def formalize_detection(self, results, height, width):
+        labels, cord = results
+        detections = []
+        n = len(labels)
+        for i in range(n):
+            row = cord[i]
+            x1, y1, x2, y2 = (
+                int(row[0] * width),
+                int(row[1] * height),
+                int(row[2] * width),
+                int(row[3] * height),
+            )
+            score = float(row[4].item())
+            name = self.detector.model.names[int(labels[i])]
+            detections.append(([x1, y1, int(x2 - x1), int(y2 - y1)], score, name))
+        return detections
+
     def listener_callback(self, image):
+        start = time.time()
         self.get_logger().info(f"Image received from Camera {self.camera_id}")
         cv_image = cv2.cvtColor(
             self._cv_bridge.imgmsg_to_cv2(image, desired_encoding="passthrough"),
@@ -117,15 +158,44 @@ class MinimalPublisher(Node):
             # check type of results
             if isinstance(results, list):
                 annotated_image = results[0].plot()
+                new_results = results[0].boxes.data.cpu().tolist()
+                class_names = results[0].names
             else:
                 annotated_image = results.render()[0]
+                # For information datas
+                new_results = results.xyxy[0].cpu().numpy().tolist()
+                class_names = results.names
 
-            encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
-                annotated_image, "rgb8"
-            )
-            self.publisher_annotated_image.publish(encoded_annotated_image)
-            new_results = results[0].boxes.data.cpu().tolist()
-            class_names = results[0].names  # Assuming this is how you get class names
+                if self.tracker_enabled:
+                    # For tracker
+                    res = results.xyxyn[0][:, -1], results.xyxyn[0][:, :-1]
+                    detections = self.formalize_detection(
+                        res, height=cv_image.shape[0], width=cv_image.shape[1]
+                    )
+                    tracks = self.tracker.update_tracks(detections, frame=cv_image)
+                    for track in tracks:
+                        if not track.is_confirmed():
+                            continue
+                        track_id = track.track_id
+                        ltrb = track.to_ltrb()
+                        bbox = ltrb
+                        cv2.putText(
+                            cv_image,
+                            "ID : " + str(track_id),
+                            (int(bbox[0]) + 10, int(bbox[1] + 30)),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.7,
+                            (0, 0, 0),
+                            thickness=2,
+                        )
+
+            encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(cv_image, "rgb8")
+
+            if self.tracker_enabled:
+                self.publisher_annotated_image.publish(encoded_annotated_image)
+            else:
+                self.publisher_annotated_image.publish(annotated_image)
+
             distance_calculator = DistanceCalculator()
             for result in new_results:
                 # Informations part
@@ -146,6 +216,9 @@ class MinimalPublisher(Node):
                 informations.covariance_matrix = flattened_covariance_matrix
                 informations.centroid_distance = distance_centroid
                 self.publisher_information.publish(informations)
+        end = time.time()
+        t = end - start
+        self.get_logger().info(f"Time : {t}")
 
 
 def main(args=None):
@@ -158,12 +231,15 @@ def main(args=None):
     # Add your custom argument
     parser.add_argument("--cam", type=str, default="1", help="Camera identifier")
     parser.add_argument("--yolo", type=str, default="v5", help="Yolo version")
+    parser.add_argument("--tracker", type=bool, default="false", help="Enable tracker")
 
     # Parse the command line arguments
     custom_args = parser.parse_args()
 
     # Create and spin your node
-    minimal_publisher = MinimalPublisher(custom_args.cam, custom_args.yolo)
+    minimal_publisher = MinimalPublisher(
+        custom_args.cam, custom_args.yolo, custom_args.tracker
+    )
     rclpy.spin(minimal_publisher)
 
     # Shutdown and cleanup
