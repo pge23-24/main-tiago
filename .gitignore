@@ -59,7 +59,7 @@ COCO2017/
 *.zip
 
 # USE CASES
-*USE_CASE*
+*prototyping/USE_CASE*
 
 # Vscode cache
 *.vscode
@@ -67,6 +67,10 @@ COCO2017/
 # Irrevelant assets
 localization
 bird_view
+Extrait_baptiste
+Image_mire_1
+Image_mire_2
+prototyping/assets
 
 # Mac folders
 .DS_Store
