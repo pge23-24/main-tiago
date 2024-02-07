@@ -10,7 +10,7 @@ echo "Cam : $cam_id"
 yolo_version=${2:-v5}
 echo "Yolo : $yolo_version"
 
-tracker_enabled=${3:-false}
+tracker_enabled=${3:-False}
 echo "Tracker : $tracker_enabled"
 
 # Exécuter camera_yolo avec l'identifiant de la caméra
