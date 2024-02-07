@@ -128,11 +128,11 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
 }
 
 void RelayControlNode::is_joy_actif(const actionlib_msgs::GoalStatusArray& msg) {
-  if (msg.status_list.size() > 0) {
-    joy_actif = false;
-    }
-  else {
-    joy_actif = true;
+  if (sig_joy == DOWN && msg.status_list.size() > 0) {
+    sig_joy = UP;
+    joy_actif = !joy_actif;
+  } else if (sig_joy == UP && msg.status_list.size() == 0) {
+    sig_joy = DOWN;
   }
 }
 

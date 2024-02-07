@@ -37,6 +37,7 @@ extern int serial;
 
 enum SpotState {STOPPED, MOUVEMENT, STOP_WAIT};
 enum MatState {IDLE_NAV, MANUAL, RECOVERY};
+enum SigJoy {UP, DOWN};
 
 
 
@@ -57,6 +58,8 @@ class RelayControlNode {
   ros::Time timerStart = ros::Time::now();
   SpotState spot_state = STOPPED;
   MatState mat_state = IDLE_NAV;
+  SigJoy sig_joy = DOWN;
+
 
   bool joy_actif = false;
   bool recovery_actif = false;
