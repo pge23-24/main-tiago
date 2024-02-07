@@ -42,8 +42,11 @@
 # Pycache
 *.pyc
 
-# Log folder
-*log*
+# generated folder
+log/
+logs/
+install/
+build/
 
 # COCO dataset
 COCO_2017/
@@ -56,7 +59,7 @@ COCO2017/
 *.zip
 
 # USE CASES
-*USE_CASE*
+*prototyping/USE_CASE*
 
 # Vscode cache
 *.vscode
@@ -64,8 +67,57 @@ COCO2017/
 # Irrevelant assets
 localization
 bird_view
+Extrait_baptiste
+Image_mire_1
+Image_mire_2
+prototyping/assets
 
 # Mac folders
 .DS_Store
 */.DS_Store
 *DS_Store
+
+# Assets
+assets
+
+# Must be cleaned
+*baptiste*
+*mire*
+*stitchong*
+*temp*
+
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Conti Licence and software
+*CES_FWK_Gateway_ecalToRos2/
+*Fwk_licensed/
