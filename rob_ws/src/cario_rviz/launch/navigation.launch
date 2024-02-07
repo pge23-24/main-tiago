@@ -28,7 +28,7 @@
     />
 
   <node
-    name="dyn_reconfigure_max_speed_x_backward"
+    name="dyn_reconfigure_max_vel_theta"
     pkg="dynamic_reconfigure"
     type="dynparam"
     args="set /move_base/TebLocalPlannerROS max_vel_theta 1.5"
