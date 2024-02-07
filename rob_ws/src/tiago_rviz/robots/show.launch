@@ -1,4 +1,4 @@
-<launch>
+<!-- <launch>
   <arg name="laser_model"   default="sick-571"/>
   <arg name="rgbd_sensors"  default="false"/>
 
@@ -9,4 +9,17 @@
   <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tiago_rviz)/config/show.rviz"/>
+</launch> -->
+
+<launch>
+  // Load robot model
+  <param name="robot_description" command="xacro '$(find tiago_rviz)/robots/pmb2.urdf.xacro' laser_model:=sick-571 rgbd_sensors:=false" />
+
+  // Load rviz config  
+  <arg name="rvizconfig" default="$(find tiago_rviz)/config/launch.rviz" />
+  
+  // Launch rviz and robot_state_publisher
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" />
 </launch>
