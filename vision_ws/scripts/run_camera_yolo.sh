@@ -4,7 +4,11 @@
 source install/setup.bash
 
 # Exécuter le noeud ROS avec l'argument de la caméra passé au script
-cam_id=$1
+cam_id=${1:-1}
 echo "$cam_id"
+
+yolo_version=${2:-v5}
+echo "$yolo_version"
+
 # Exécuter camera_yolo avec l'identifiant de la caméra
-ros2 run py_pubsub camera_yolo --cam $cam_id
+ros2 run py_pubsub camera_yolo --cam $cam_id --yolo $yolo_version

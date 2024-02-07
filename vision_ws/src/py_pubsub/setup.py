@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 package_name = "py_pubsub"
@@ -6,7 +6,8 @@ package_name = "py_pubsub"
 setup(
     name=package_name,
     version="0.0.0",
-    packages=[package_name],
+    packages=find_packages(),
+    py_modules=["py_pubsub.distance_calculator"],
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),

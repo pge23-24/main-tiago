@@ -16,6 +16,7 @@ docker run -it --rm \
     -e ROS_MASTER_URI=http://localhost:11311 \
     -v ./vision_ws/src:/workspace/src \
     -v ./vision_ws/scripts:/workspace/scripts \
+    -v ./vision_ws/models:/workspace/models \
     cario360/ros2
 
 xhost -local:root
