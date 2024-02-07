@@ -1,7 +1,7 @@
 import time
 import cv2 as cv
 import os
-import undistortPolynomial
+import prototyping.src.surround_yolo.undistortPolynomial as undistortPolynomial
 import homography
 import numpy as np
 
