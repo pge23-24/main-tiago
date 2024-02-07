@@ -1,8 +1,17 @@
 <launch>
+  <arg name="robot_speed" default="0.2"/>
+
   <include file="$(find cario_static)/launch/upload.launch">
     <arg name="laser_model"   default="sick-571"/>
     <arg name="rgbd_sensors"  default="false"/>
   </include>
+
+  <node
+    name="dyn_reconfigure"
+    pkg="dynamic_reconfigure"
+    type="dynparam"
+    args="set /move_base/PalLocalPlanner max_vel_x $(arg robot_speed)"
+    />
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
