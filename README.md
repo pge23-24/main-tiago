@@ -37,29 +37,6 @@ pre-commit install
 
 ## Procédure de connexion au robot simulé
 
-## Procédure de connexion au robot Tiago
-
-Pour ce connecter au robot, il faut d'abord se connecter au réseau Wi-Fi émis par le robot, puis indiquer à ROS1 de se connecter au master du robot. Le script suivant le fait automatiquement :
-Utiliser la commande suivante dans le workspace :
-
-```bash
-source connect_to_robot.bash
-```
-
-Pour se connecter "manuellement" :
-
-```bash
-SSID : PMB2-46c
-PWD  : P@L-R0b0t1cs
-```
-
-Variables d'environnement à configurer pour ROS :
-
-```bash
-export ROS_MASTER_URI=http://10.0.68.1:11311
-export ROS_IP=<pc_ip>
-```
-
 ## GIT ET L'INTEGRATION CONTINUE
 
 ### Utilisation de Git lors du PGE

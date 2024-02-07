@@ -24,8 +24,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  ClusterStamped.msg
-  ClusterStampedArray.msg
+  ObstacleMeasureStamped.msg
+  ObstacleMeasureStampedArray.msg
+  CameraDetectionStamped.msg
+  CameraDetectionStampedArray.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
