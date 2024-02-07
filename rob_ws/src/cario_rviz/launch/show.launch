@@ -1,0 +1,11 @@
+<launch>
+  <include file="$(find cario_robot_model)/launch/upload.launch">
+    <arg name="laser_model" value="sick-571"/>
+    <arg name="rgbd_sensors" value="false"/>
+  </include>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cario_rviz)/rviz/show.rviz"/>
+</launch>

@@ -24,8 +24,6 @@ find_package(catkin REQUIRED COMPONENTS
 
   pcl_ros
   pcl_conversions
-
-  kalman_ros
 )
 
 ###################################
@@ -42,14 +40,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+catkin_install_python(PROGRAMS scripts/obstacles_tracker.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+catkin_install_python(PROGRAMS scripts/obstacles_cluster.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+catkin_install_python(PROGRAMS scripts/local_costmap_inflation.py
+DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 ## Declare a C++ executable
 add_executable(scan_filter src/scan_filter.cpp)
-add_executable(obstacles_cluster src/obstacles_cluster.cpp)
-add_executable(obstacles_tracker src/obstacles_tracker.cpp)
 add_executable(cluster_viz src/cluster_viz.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(scan_filter ${catkin_LIBRARIES})
-target_link_libraries(obstacles_cluster ${catkin_LIBRARIES})
-target_link_libraries(obstacles_tracker ${catkin_LIBRARIES})
 target_link_libraries(cluster_viz ${catkin_LIBRARIES})

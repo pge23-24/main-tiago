@@ -1,0 +1,13 @@
+# This message holds informations of a camera's detection.
+
+# Time of sensor data acqusition, coordinate frame ID.
+Header header
+
+# Class of the detection
+string class
+
+# Polar coordinates (rho, theta) of the detection in the frame given in the header.
+float32[2] coordinates
+
+# Statistical covariance of the detection in the frame given in the header.
+float32[4] covariance
