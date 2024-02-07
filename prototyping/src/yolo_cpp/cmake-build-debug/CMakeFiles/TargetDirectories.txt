@@ -1,3 +1,0 @@
-C:/Users/olfia/CLionProjects/yolo/cmake-build-debug/CMakeFiles/yolo.dir
-C:/Users/olfia/CLionProjects/yolo/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/olfia/CLionProjects/yolo/cmake-build-debug/CMakeFiles/rebuild_cache.dir

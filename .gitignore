@@ -42,8 +42,11 @@
 # Pycache
 *.pyc
 
-# Log folder
-*log*
+# generated folder
+log/
+logs/
+install/
+build/
 
 # COCO dataset
 COCO_2017/
@@ -77,5 +80,44 @@ prototyping/assets
 # Assets
 assets
 
-# IntellijIdea cache
-.idea
+# Must be cleaned
+*baptiste*
+*mire*
+*stitchong*
+*temp*
+
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Conti Licence and software
+*CES_FWK_Gateway_ecalToRos2/
+*Fwk_licensed/
