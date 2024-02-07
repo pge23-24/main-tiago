@@ -10,8 +10,8 @@ import torch
 import time
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
-from py_pubsub_msgs.msg import ClassCoordinates
-from py_pubsub_msgs.msg import ClassCoordinatesArray
+from py_pubsub_msgs.msg import CameraDetectionStamped
+from py_pubsub_msgs.msg import CameraDetectionStampedArray
 from py_pubsub.distance_calculator import DistanceCalculator
 
 CAMERA_ANGLE = 190
@@ -75,9 +75,9 @@ class MinimalPublisher(Node):
             Image, self.topic_name_image, 10
         )
 
-        self.topic_name_information = f"information_{camera_id}"
+        self.topic_name_information = f"camera_detection_{camera_id}"
         self.publisher_information = self.create_publisher(
-            ClassCoordinatesArray, self.topic_name_information, 10
+            CameraDetectionStampedArray, self.topic_name_information, 10
         )
 
         self.subscription = self.create_subscription(
@@ -205,11 +205,11 @@ class MinimalPublisher(Node):
             self.publisher_annotated_image.publish(encoded_annotated_image)
 
             distance_calculator = DistanceCalculator()
-            info_array = ClassCoordinatesArray()
+            info_array = CameraDetectionStampedArray()
             info_array.header.stamp = self.get_clock().now().to_msg()
             for result in new_results:
                 # Informations part
-                informations = ClassCoordinates()
+                informations = CameraDetectionStamped()
                 informations.header = info_array.header
 
                 covariance_matrix, distance_centroid, theta_moy, class_name = (
@@ -244,7 +244,7 @@ def main(args=None):
 
     # Add your custom argument
     parser.add_argument("--cam", type=str, default="1", help="Camera identifier")
-    parser.add_argument("--yolo", type=str, default="v5", help="Yolo version")
+    parser.add_argument("--yolo", type=str, default="v8", help="Yolo version")
     parser.add_argument(
         "--tracker", type=str, default="false", help="Enable tracker (false | true)"
     )

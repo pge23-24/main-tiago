@@ -7,7 +7,7 @@ source install/setup.bash
 cam_id=${1:-1}
 echo "Cam : $cam_id"
 
-yolo_version=${2:-v5}
+yolo_version=${2:-v8}
 echo "Yolo : $yolo_version"
 
 tracker_enabled=${3:-False}

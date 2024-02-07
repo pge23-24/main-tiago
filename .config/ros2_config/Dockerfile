@@ -129,6 +129,9 @@ RUN apt-get update && apt-get install -y \
 ### +++ Workspace config +++ ###
 ################################
 
+# install vim
+RUN apt-get update && apt-get install -y vim
+
 # Add shortcuts and aliases
 RUN echo "cd /workspace" >> /root/.bashrc
 COPY .config/ros2_config/aliases.bash /root/.bash_aliases
