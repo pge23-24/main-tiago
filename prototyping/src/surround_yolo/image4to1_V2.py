@@ -1,4 +1,4 @@
-import zoom
+import prototyping.src.surround_yolo.zoom as zoom
 import numpy as np
 import cv2 as cv
 import os

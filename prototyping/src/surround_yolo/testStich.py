@@ -1,5 +1,5 @@
 import cv2 as cv
-import undistortPolynomial
+import prototyping.src.surround_yolo.undistortPolynomial as undistortPolynomial
 
 class Sticher:
     def __init__(self):
