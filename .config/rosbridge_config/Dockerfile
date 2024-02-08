@@ -1,6 +1,3 @@
-ARG ROS1_WS=/ros1_ws
-ARG ROS2_WS=/ros2_ws
-
 # Dockerfile to bridge the ros1 and ros2 messages
 #
 # Build the ros1 messages
