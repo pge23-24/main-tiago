@@ -1,56 +1,55 @@
 # VISION_WS
 
-Cette documentation ne prent pas en compte Docker
-
-## Build
-
-Premier build :
-
-```bash
-colcon build --packages-select py_pubsub_msgs --cmake-args -DPYTHON_EXECUTABLE=/usr/bin/python3
-```
-
-Ensuite, celle ci suffit : 
-
-```bash
-colcon build --packages-select py_pubsub_msgs
-```
-
 ## Utilisation
 
+### Build
+
+```bash
+source scripts/build_vision_ws.sh
+```
+
+### Lancement
+
+#### Traitement Yolo toutes les caméras
+
+```bash
+bash scripts/run_all_camera_yolo.sh
+# ou
+ros2 launch py_pubsub launch_all_camera.py
+```
+
+#### Display toutes les caméras
+
+```bash
+bash scripts/run_all_display.sh
+# ou
+ros2 launch py_pubsub launch_all_camera.py
+```
+
+#### Traitement Yolo sur une caméra
+
+```bash
+bash scripts/run_camera_yolo.sh <id>
+ros2 run py_pubsub camera --ros-args -p image_topic_id:=<id> 
+```
+
+#### Display une caméra
+
+```bash
+bash scripts/run_display.sh <id>
+ros2 run py_pubsub display --ros-args -p image_topic_id:=<id> 
+```
+
+## Prototype
+
 Activer la venv :
+
 ```bash
 source .venv/bin/activate
 ```
 
 Désactiver la venv :
+
 ```bash
 deactivate
-```
-
-Lancement script traitement caméra (entre 1 et 4):
-```bash
-bash run_camera_yolo.sh <num_cam>
-```
-
-Lancement script display caméra (entre 1 et 4):
-```bash
-bash run_display.sh <num_cam>
-```
-
-## Communication 
-
-Les messages sont : 
-* angles et classes + header : py_pubsub_msgs.msg ClassCoordinates
-* l'image au format standard ROS : sensor_msgs.msg Image
-
-# Charger l'environnement ROS
-source /opt/ros/foxy/setup.bash
-
-# Construire le package spécifié
-```bash
-colcon build --packages-select py_pubsub_msgs --cmake-args -DPYTHON_EXECUTABLE=/usr/bin/python3
-colcon build --packages-select py_pubsub --cmake-args -DPYTHON_EXECUTABLE=/usr/bin/python3
-
-source install/setup.bash
 ```
