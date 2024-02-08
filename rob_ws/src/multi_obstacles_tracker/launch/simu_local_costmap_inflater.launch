@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
+    <!-- <remap from="move_base/local_costmap/costmap" to="to_inflate_costmap"/> -->
+
     <node name="local_costmap_inflation" pkg="multi_obstacles_tracker" type="local_costmap_inflation.py" output="screen"></node>
     <node name="test_CameraDetectionsStamped" pkg="multi_obstacles_tracker" type="test_CameraDetectionsStamped.py" output="screen"></node>
 </launch>

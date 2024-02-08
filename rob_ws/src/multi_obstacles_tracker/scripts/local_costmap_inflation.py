@@ -9,7 +9,8 @@ from nav_msgs.msg import OccupancyGrid, Odometry
 from multi_obstacles_tracker_msgs.msg import CameraDetectionStampedArray
 from scipy.ndimage import gaussian_filter
 
-mutex = threading.Lock()
+costmap_mutex = threading.Lock()
+odom_mutex = threading.Lock()
 
 class LocalCostMapInflation:
     def __init__(self) -> None: 
@@ -17,14 +18,10 @@ class LocalCostMapInflation:
         self.costmap_sub_ = rospy.Subscriber("/to_inflate_costmap", OccupancyGrid, self.costmapCallback)
 
         # subscribe to the topic /information_1
-        self.camera_detection_sub_ = message_filters.Subscriber("/information_1", CameraDetectionStampedArray)
+        self.camera_detection_sub_ = rospy.Subscriber("/information_1", CameraDetectionStampedArray, self.inflateCallback)
 
         # subscribe to the topic /mobile_base_controller/odom
-        self.odom_sub_ = message_filters.Subscriber("/mobile_base_controller/odom", Odometry)
-
-        # synch the tow last subs
-        ts = message_filters.ApproximateTimeSynchronizer([self.camera_detection_sub_, self.odom_sub_], 1, 1)
-        ts.registerCallback(self.inflateCallback)
+        self.odom_sub_ = rospy.Subscriber("/mobile_base_controller/odom", Odometry, self.odomCallback)
 
         # Publish to the topic /measures
         self.costmap_pub_ = rospy.Publisher("/move_base/local_costmap/costmap", OccupancyGrid, queue_size=1)
@@ -32,19 +29,29 @@ class LocalCostMapInflation:
         # the current costmap
         self.costmap = None
 
+        # the current odom
+        self.odom = None
+
         # inflation dist
         self.inflation_dist = 0.5
         
         # spin it
         rospy.spin()
 
-    def costmapCallback(self, costmap: OccupancyGrid):
-        with mutex:
-            self.costmap = costmap
+    def odomCallback(self, odom: Odometry):
+        with odom_mutex:
+            self.odom = odom
+        print('odom acquired')
 
-    def inflateCallback(self, detections: CameraDetectionStampedArray, odom: Odometry):
+    def costmapCallback(self, costmap: OccupancyGrid):
+        with costmap_mutex:
+            self.costmap = costmap
+        print("costmap received")
+
+    def inflateCallback(self, detections: CameraDetectionStampedArray):
         # copy the current map
-        with mutex:
+        print("synch")
+        with costmap_mutex:
             inflated_costmap = copy.copy(self.costmap)
         if self.costmap is None:
             return
@@ -59,6 +66,10 @@ class LocalCostMapInflation:
         resolution = inflated_costmap.info.resolution
 
         # get rotation angle between odom and map
+        with odom_mutex:
+            odom = self.odom
+        if odom is None:
+            return
         quaternion = (odom.pose.pose.orientation.x, odom.pose.pose.orientation.y, odom.pose.pose.orientation.z, odom.pose.pose.orientation.w)
         euler_angles = tf.transformations.euler_from_quaternion(quaternion)
         z_tf = euler_angles[2]

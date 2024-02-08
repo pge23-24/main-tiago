@@ -19,7 +19,7 @@ def talker():
         my_msg = CameraDetectionStamped()
 
         my_msg.header = std_msgs.msg.Header()
-        my_msg.header.stamp = rospy.Time.now()
+        my_msg.header.stamp = rospy.get_rostime()
 
         my_msg_array.header = my_msg.header
 
