@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     inetutils-ping \
     git
 
+
 # add sourcing to bashrc
 RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bash_profile
 
@@ -31,6 +32,7 @@ RUN echo "export QT_X11_NO_MITSHM=1" >> ~/.bashrc
 
 RUN mkdir -m 700 -p /run/user/$(id -u)
 RUN echo "export XDG_RUNTIME_DIR=/run/user/$(id -u)" >> ~/.bashrc
+
 
 ###################################
 ### +++ Conti Configuration +++ ###
@@ -99,6 +101,7 @@ RUN pip3 install ultralytics \
                 pywavefront \
                 transformers \
                 accelerate \
+
                 natsort \
                 numpy==1.24.4 \
                 lapx==0.5.2 \
@@ -132,7 +135,6 @@ RUN apt-get update && apt-get install -y vim
 # Add shortcuts and aliases
 RUN echo "cd /workspace" >> /root/.bashrc
 COPY .config/ros2_config/aliases.bash /root/.bash_aliases
-
 
 # Set the working directory
 WORKDIR /workspace
