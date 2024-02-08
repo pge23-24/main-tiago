@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <node name="local_costmap_inflation" pkg="multi_obstacles_tracker" type="local_costmap_inflation.py" output="screen"></node>
+</launch>

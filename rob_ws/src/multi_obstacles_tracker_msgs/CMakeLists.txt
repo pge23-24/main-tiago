@@ -26,6 +26,8 @@ add_message_files(
   FILES
   ObstacleMeasureStamped.msg
   ObstacleMeasureStampedArray.msg
+  CameraDetectionStamped.msg
+  CameraDetectionStampedArray.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
