@@ -3,12 +3,11 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
-import argparse
+
 from ultralytics import YOLO  # YOLOv8 import
 from ultralytics.utils import LOGGER  # LOGGER import
 import torch
 import time
-from deep_sort_realtime.deepsort_tracker import DeepSort
 
 from py_pubsub_msgs.msg import CameraDetectionStamped
 from py_pubsub_msgs.msg import CameraDetectionStampedArray
@@ -22,7 +21,6 @@ models_path = "models/"
 
 class YOLOv8Detector:
     type = "YOLOv8"
-
     def __init__(self):
         try:
             self.model = YOLO(f"{models_path}yolov8s.pt")
@@ -35,80 +33,36 @@ class YOLOv8Detector:
             return results
 
 
-class YOLOv5Detector:
-    type = "YOLOv5"
-
-    def __init__(self, model_name=f"{models_path}/yolov5l.pt"):
-        # Load YOLOv5 model
-        try:
-            self.model = torch.hub.load(
-                "ultralytics/yolov5",
-                "custom",
-                path=f"{models_path}yolv5l_custom.pt",
-            )
-        except Exception as e:
-            LOGGER.error(
-                f"Error loading custom YOLOv5 model. {e} \nLoading default model."
-            )
-            try:
-                self.model = YOLO(model_name)
-            except Exception as e:
-                LOGGER.error(f"Error loading default YOLOv5 model. {e}")
-                self.model = None
-
-    def compute(self, image):
-        """Process a single image"""
-        if image is not None:
-            results = self.model(image)
-            return results
-
-
 class MinimalPublisher(Node):
-    def __init__(self, camera_id, yolo_version, tracker_enabled):
+    def __init__(self):
         super().__init__("minimal_publisher")
-        self.camera_id = camera_id
+        self.declare_parameter('cam_id', 1)
+        
+        self.camera_id = self.get_parameter('cam_id').get_parameter_value().integer_value
 
-        self.tracker_enabled = tracker_enabled
-
-        self.topic_name_image = f"annotated_images_{camera_id}"
+        # Publishers
+        self.topic_name_image = f"annotated_images_{ self.camera_id}"
         self.publisher_annotated_image = self.create_publisher(
             Image, self.topic_name_image, 10
         )
 
-        self.topic_name_information = f"camera_detection_{camera_id}"
+        self.topic_name_information = f"camera_detection_{ self.camera_id}"
         self.publisher_information = self.create_publisher(
             CameraDetectionStampedArray, self.topic_name_information, 10
         )
 
+        # Subscribers
         self.subscription = self.create_subscription(
-            Image, f"Cam{camera_id}/image_raw", self.listener_callback, 10
+            Image, f"Cam{self.camera_id}/image_raw", self.listener_callback, 10
         )
         self._cv_bridge = CvBridge()
-        if yolo_version == "v8":
-            self.detector = YOLOv8Detector()
-        elif yolo_version == "v5":
-            self.detector = YOLOv5Detector()
 
-        if tracker_enabled:
-            self.tracker = DeepSort(
-                max_age=5,
-                n_init=2,
-                nms_max_overlap=1.0,
-                max_cosine_distance=0.3,
-                nn_budget=None,
-                override_track_class=None,
-                embedder="mobilenet",
-                half=True,
-                bgr=True,
-                embedder_gpu=True,
-                embedder_model_name=None,
-                embedder_wts=None,
-                polygon=False,
-                today=None,
-            )
+        self.detector = YOLOv8Detector()
+
         self.get_logger().info(
-            f"Camera {camera_id} YOLO{yolo_version} Tracker {tracker_enabled} Node has started"
+            f"Camera { self.camera_id} Node has started"
         )
+        
 
     def toData(self, result, classes):
         bounding_box_height = result[3] - result[1]
@@ -158,49 +112,15 @@ class MinimalPublisher(Node):
         results = self.detector.compute(cv_image)
         if results:
             # Annotated image part
-            # check type of results
-            # YOLOv8-v5
-            if isinstance(results, list):
-                annotated_image = results[0].plot()
-                new_results = results[0].boxes.data.cpu().tolist()
-                class_names = results[0].names
+            # YOLOv8
+            
+            annotated_image = results[0].plot()
+            new_results = results[0].boxes.data.cpu().tolist()
+            class_names = results[0].names
 
-            # yoloV5
-            else:
-                annotated_image = results.render()[0]
-                # For information datas
-                new_results = results.xyxy[0].cpu().numpy().tolist()
-                class_names = results.names
-
-            if self.tracker_enabled:
-                # For tracker
-                res = results.xyxyn[0][:, -1], results.xyxyn[0][:, :-1]
-                detections = self.formalize_detection(
-                    res, height=cv_image.shape[0], width=cv_image.shape[1]
-                )
-                tracks = self.tracker.update_tracks(detections, frame=cv_image)
-                for track in tracks:
-                    if not track.is_confirmed():
-                        continue
-                    track_id = track.track_id
-                    ltrb = track.to_ltrb()
-                    bbox = ltrb
-                    cv2.putText(
-                        cv_image,
-                        "ID : " + str(track_id),
-                        (int(bbox[0]) + 10, int(bbox[1] + 30)),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.7,
-                        (0, 0, 0),
-                        thickness=2,
-                    )
-                encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
-                    cv_image, "rgb8"
-                )
-            else:
-                encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
-                    annotated_image, "rgb8"
-                )
+            encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
+                annotated_image, "rgb8"
+            )
 
             self.publisher_annotated_image.publish(encoded_annotated_image)
 
@@ -236,29 +156,11 @@ class MinimalPublisher(Node):
 
 
 def main(args=None):
-    # Initialize ROS without passing args
-    rclpy.init()
-
-    # Create an argument parser for your script
-    parser = argparse.ArgumentParser(description="ROS 2 YOLO Object Detection Node")
-
-    # Add your custom argument
-    parser.add_argument("--cam", type=str, default="1", help="Camera identifier")
-    parser.add_argument("--yolo", type=str, default="v8", help="Yolo version")
-    parser.add_argument(
-        "--tracker", type=str, default="false", help="Enable tracker (false | true)"
-    )
-
-    # Parse the command line arguments
-    custom_args = parser.parse_args()
-
-    if custom_args.tracker == "true" or custom_args.tracker == "True":
-        tracker = True
-    else:
-        tracker = False
+    # Initialize ROS with args
+    rclpy.init(args=args)
 
     # Create and spin your node
-    minimal_publisher = MinimalPublisher(custom_args.cam, custom_args.yolo, tracker)
+    minimal_publisher = MinimalPublisher()
     rclpy.spin(minimal_publisher)
 
     # Shutdown and cleanup

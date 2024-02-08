@@ -1,4 +1,6 @@
 from setuptools import setup, find_packages
+from glob import glob
+import os
 
 
 package_name = "py_pubsub"
@@ -11,6 +13,7 @@ setup(
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
+        (os.path.join('share/', package_name), glob('launch/*.py'))
     ],
     install_requires=["setuptools"],
     zip_safe=True,
@@ -24,6 +27,7 @@ setup(
             "display = py_pubsub.display:main",
             "camera_yolo = py_pubsub.camera_yolo:main",
             "simu_ecal = py_pubsub.simu_ecal_image:main",
+            "launch_all_camera = launch.launch_all_camera:main",
         ],
     },
 )
