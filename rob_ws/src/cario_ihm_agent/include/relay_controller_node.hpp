@@ -11,6 +11,7 @@
 #include "actionlib_msgs/GoalStatusArray.h"
 #include "move_base_msgs/RecoveryStatus.h"
 #include "ros/ros.h"
+#include <signal.h>
 
 extern int serial;
 
@@ -35,6 +36,8 @@ extern int serial;
 #define MAT_RED_ON "\x68"
 #define MAT_RED_OFF "\x72"
 
+#define ALL_OFF "\x6E"
+
 enum SpotState {STOPPED, MOUVEMENT, STOP_WAIT};
 enum MatState {IDLE_NAV, MANUAL, RECOVERY};
 enum SigJoy {UP, DOWN};
@@ -43,14 +46,15 @@ enum SigJoy {UP, DOWN};
 
 class RelayControlNode {
  public:
-  RelayControlNode(const char* port, int baudrate);
+  RelayControlNode(ros::NodeHandle nh, const char* port, int baudrate);
   void cmd_vel_callback(const geometry_msgs::Twist& msg);
   void is_joy_actif(const actionlib_msgs::GoalStatusArray& msg);
   void is_recovery_actif(const move_base_msgs::RecoveryStatus& msg); //TODO: change the type of the message
   void timer_callback(const ros::TimerEvent& event);
+  void shutdown();
+  bool init_successful() { return init_success; }
 
  private:
-  ros::NodeHandle nh;
   ros::Subscriber sub_cmd_vel, sub_joystick, sub_recovery;
   ros::Timer timer;
 
@@ -60,7 +64,7 @@ class RelayControlNode {
   MatState mat_state = IDLE_NAV;
   SigJoy sig_joy = DOWN;
 
-
+  bool init_success;
   bool joy_actif = false;
   bool recovery_actif = false;
 };

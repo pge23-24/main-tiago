@@ -2,7 +2,9 @@
 
 #include "relay_controller_node.hpp"
 
-RelayControlNode::RelayControlNode(const char* port, int baudrate) {
+std::unique_ptr<RelayControlNode> relay_controller;
+
+RelayControlNode::RelayControlNode(ros::NodeHandle nh, const char* port, int baudrate) {
   // Initialize serial port
   this->serial = open(port, O_RDWR | O_NOCTTY);
 
@@ -10,6 +12,7 @@ RelayControlNode::RelayControlNode(const char* port, int baudrate) {
     std::string error_message =
         "Error opening serial port '" + std::string(port) + "'";
     ROS_ERROR(error_message.c_str());
+    this->init_success = false;
     return;
   }
 
@@ -25,15 +28,21 @@ RelayControlNode::RelayControlNode(const char* port, int baudrate) {
   ROS_INFO(success_message.c_str());
 
   // Initialize ROS elements
-  this->sub_cmd_vel = this->nh.subscribe(CMD_VEL_TOPIC, 1000,
+  this->sub_cmd_vel = nh.subscribe(CMD_VEL_TOPIC, 1000,
                                   &RelayControlNode::cmd_vel_callback, this);
-  this->sub_joystick = this->nh.subscribe(JOY_TOPIC, 1000,
+  this->sub_joystick = nh.subscribe(JOY_TOPIC, 1000,
                                   &RelayControlNode::is_joy_actif, this);
-  this->sub_recovery = this->nh.subscribe(RECOVERY_TOPIC, 1000, 
+  this->sub_recovery = nh.subscribe(RECOVERY_TOPIC, 1000, 
                                   &RelayControlNode::is_recovery_actif, this);
-  this->timer = this->nh.createTimer(ros::Duration(0.2),
+  this->timer = nh.createTimer(ros::Duration(0.2),
                                       &RelayControlNode::timer_callback, this);
-  ros::spin();
+  this->init_success = true;
+}
+
+void RelayControlNode::shutdown()
+{
+  write(this->serial, ALL_OFF, 1);
+  close(this->serial);
 }
 
 void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
@@ -146,9 +155,21 @@ void RelayControlNode::is_recovery_actif(const move_base_msgs::RecoveryStatus& m
   }
 }
 
-int main(int argc, char** argv) {
-  ros::init(argc, argv, "relay_controller");
-  RelayControlNode relay_controller(PORT, BAUDRATE);
+void sigint_handler(int sig) {
+  relay_controller->shutdown();
+  ros::shutdown();
+}
 
+int main(int argc, char** argv) {
+  ros::init(argc, argv, "relay_controller", ros::init_options::NoSigintHandler);
+
+  ros::NodeHandle nh;
+  relay_controller = std::make_unique<RelayControlNode>(nh, PORT, BAUDRATE);
+
+  if (relay_controller->init_successful()) {
+    signal(SIGINT, sigint_handler);
+    ros::spin();
+  }
+  
   return 0;
 }
