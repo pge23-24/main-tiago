@@ -81,6 +81,32 @@ Choisir la map active :
 rosservice call /pal_map_manager/change_map "input: '<map_name>'"
 ```
 
+### Evitement d'obstacles dynamiques
+Se connecter au robot:
+```
+ssh pal@pmb2-46c
+password:_____
+```
+Modifier le fichier `move_base.launch`
+```
+sudo vim /opt/pal/ferrum/share/pal_navigation_cfg_pmb2/launch/move_base.launch
+```
+Appuyer sur `i` pour rentrer en mode édition.
+Ajouter la ligne suivante dans la balise `node` nommé *move_base* après les remap:
+```
+<remap from="odom"    to="$(arg odom)"/>
+<remap from="cmd_vel" to="$(arg cmd_vel)"/>
+```
+```
+<remap from="move_base/local_costmap/costmap" to="to_inflate_costmap"/>
+```
+Appuyer sur *echap* pour quiter le mode édition. taper *:wq!* puis *entrée* pour sauvgarder le fichier.
+
+Exécuter la commande suivante dans le terminal :  
+```bash
+pal-restart move_base
+```
+
 ## Déplacement
 
 avec les touches clavier :
