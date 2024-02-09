@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #include "geometry_msgs/Twist.h"
-#include "actionlib_msgs/GoalStatusArray.h"
+#include "sensor_msgs/Joy.h"
 #include "move_base_msgs/RecoveryStatus.h"
 #include "multi_obstacles_tracker_msgs/CameraDetectionStampedArray.h"
 #include "ros/ros.h"
@@ -19,8 +19,9 @@ extern int serial;
 #define BAUDRATE B9600
 
 #define CMD_VEL_TOPIC "/mobile_base_controller/cmd_vel"
-#define JOY_TOPIC "/joy_priority_action/status"
+#define JOY_TOPIC "/joy"
 #define RECOVERY_TOPIC "/move_base/recovery_status"
+#define HUMAN_DETECTION_TOPIC "/multi_obstacles_tracker/camera_detections"
 #define STOP_DURATION 2.0
 
 //SPOT = Relay 1
@@ -48,7 +49,7 @@ class RelayControlNode {
  public:
   RelayControlNode(ros::NodeHandle nh, const char* port, int baudrate);
   void cmd_vel_callback(const geometry_msgs::Twist& msg);
-  void is_joy_actif(const actionlib_msgs::GoalStatusArray& msg);
+  void is_joy_actif(const sensor_msgs::Joy& msg);
   void is_recovery_actif(const move_base_msgs::RecoveryStatus& msg);
   void is_human_detected(const multi_obstacles_tracker_msgs::CameraDetectionStampedArray& msg);
   void timer_callback(const ros::TimerEvent& event);
@@ -56,7 +57,7 @@ class RelayControlNode {
   bool init_successful() { return init_success; }
 
  private:
-  ros::Subscriber sub_cmd_vel, sub_joystick, sub_recovery;
+  ros::Subscriber sub_cmd_vel, sub_joystick, sub_recovery, sub_human_detection;
   ros::Timer timer;
 
   int serial;

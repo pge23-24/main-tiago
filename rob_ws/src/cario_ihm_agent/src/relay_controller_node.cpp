@@ -34,6 +34,8 @@ RelayControlNode::RelayControlNode(ros::NodeHandle nh, const char* port, int bau
                                   &RelayControlNode::is_joy_actif, this);
   this->sub_recovery = nh.subscribe(RECOVERY_TOPIC, 1000, 
                                   &RelayControlNode::is_recovery_actif, this);
+  this->sub_human_detection = nh.subscribe(HUMAN_DETECTION_TOPIC, 1000,
+                                  &RelayControlNode::is_human_detected, this);         
   this->timer = nh.createTimer(ros::Duration(0.2),
                                       &RelayControlNode::timer_callback, this);
   this->init_success = true;
@@ -150,12 +152,9 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
   }
 }
 
-void RelayControlNode::is_joy_actif(const actionlib_msgs::GoalStatusArray& msg) {
-  if (sig_joy == DOWN && msg.status_list.size() > 0) {
-    sig_joy = UP;
+void RelayControlNode::is_joy_actif(const sensor_msgs::Joy& msg) {
+  if (msg.buttons[0] == 1) {
     joy_actif = !joy_actif;
-  } else if (sig_joy == UP && msg.status_list.size() == 0) {
-    sig_joy = DOWN;
   }
 }
 
