@@ -41,16 +41,16 @@ class LocalCostMapInflation:
     def odomCallback(self, odom: Odometry):
         with odom_mutex:
             self.odom = odom
-        print('odom acquired')
+        # print('odom acquired')
 
     def costmapCallback(self, costmap: OccupancyGrid):
         with costmap_mutex:
             self.costmap = costmap
-        print("costmap received")
+        # print("costmap received")
 
     def inflateCallback(self, detections: CameraDetectionStampedArray):
         # copy the current map
-        print("synch")
+        # print("synch")
         with costmap_mutex:
             inflated_costmap = copy.copy(self.costmap)
         if self.costmap is None:
