@@ -6,7 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NODE_NAME relay_controller)
 
-find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS 
+roscpp
+geometry_msgs
+rospy
+std_msgs
+multi_obstacles_tracker_msgs
+)
 
 catkin_package(
   INCLUDE_DIRS
@@ -25,7 +31,7 @@ add_executable(${NODE_NAME} src/relay_controller_node.cpp)
 add_dependencies(${NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS}
                  ${catkin_EXPORTED_TARGETS})
 
-target_include_directories(get_map PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# target_include_directories(get_map PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(${NODE_NAME} ${catkin_LIBRARIES})
 

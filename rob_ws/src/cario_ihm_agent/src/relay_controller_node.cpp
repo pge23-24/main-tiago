@@ -58,12 +58,26 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
       break;
 
     case MOUVEMENT:
+      while (!speed_null) {
+        if (person_detected) {
+          ROS_INFO("Person detected, spot BLINKS");
+          ros::Duration passed = ros::Time::now() - this->timerStart;
+          if ((passed >= ros::Duration(0.0) && passed < ros::Duration(0.25)) ||
+              (passed >= ros::Duration(0.5) && passed < ros::Duration(0.75))) {
+            write(this->serial, SPOT_OFF, 1);
+          } else if ((passed >= ros::Duration(0.25) && passed < ros::Duration(0.5)) ||
+                     (passed >= ros::Duration(0.75) && passed < ros::Duration(1.0))) {
+            write(this->serial, SPOT_ON, 1);
+          }
+        }
+      }
       if (speed_null) {
         ROS_INFO("Robot stopped, starting timer");
         // start 5 seconde timer without pausing thread
         this->timerStart = ros::Time::now();
         spot_state = STOP_WAIT;
       }
+      
       break;
 
     case STOP_WAIT:
@@ -153,6 +167,16 @@ void RelayControlNode::is_recovery_actif(const move_base_msgs::RecoveryStatus& m
   else {
     recovery_actif = false;
   }
+}
+
+void RelayControlNode::is_human_detected(const multi_obstacles_tracker_msgs::CameraDetectionStampedArray& msg) {
+  for (int i = 0; i < msg.detections.size(); i++) {
+    if (msg.detections[i].classification == "person" && (msg.detections[i].coordinates[1] >= 30.0 && msg.detections[i].coordinates[1] <= 330.0) && msg.detections[i].coordinates[0] <= 2.0) {
+      person_detected = true;
+      return;
+    }
+  }
+  person_detected = false;
 }
 
 void sigint_handler(int sig) {

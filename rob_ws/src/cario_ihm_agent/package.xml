@@ -34,6 +34,8 @@
   <!-- Use depend as a shortcut for packages that are both build and exec dependencies -->
   <depend>roscpp</depend>
   <depend>geometry_msgs</depend>
+  <depend>multi_obstacle_tracker_msgs</depend>
+
 
   <!-- Use build_export_depend for packages you need in order to build against this package: -->
   <!--   <build_export_depend>message_generation</build_export_depend> -->
@@ -41,11 +43,10 @@
   <!--   <buildtool_depend>catkin</buildtool_depend> -->
   <!-- Use exec_depend for packages you need at runtime: -->
 
-
   <test_depend>gtest</test_depend>
 
-
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>multi_obstacle_tracker_msgs</buildtool_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
