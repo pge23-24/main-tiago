@@ -26,6 +26,7 @@ RelayControlNode::RelayControlNode(ros::NodeHandle nh, const char* port, int bau
   std::string success_message =
       "Serial port '" + std::string(port) + "' opened successfully";
   ROS_INFO(success_message.c_str());
+  write(this->serial, MAT_ORANGE_ON, 1);
 
   // Initialize ROS elements
   this->sub_cmd_vel = nh.subscribe(CMD_VEL_TOPIC, 1000,
@@ -153,9 +154,13 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
 }
 
 void RelayControlNode::is_joy_actif(const sensor_msgs::Joy& msg) {
-  if (msg.buttons[0] == 1) {
+  if (msg.buttons[0] == 1 && sig_joy == DOWN) {
+    sig_joy = UP;
     joy_actif = !joy_actif;
+  } else if (msg.buttons[0] == 0 && sig_joy == UP) {
+    sig_joy = DOWN;
   }
+  return;
 }
 
 void RelayControlNode::is_recovery_actif(const move_base_msgs::RecoveryStatus& msg) //TODO: change to recoverymessage
