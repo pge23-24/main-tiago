@@ -32,5 +32,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES std_msgs geometry_msgs
 )
 
+install(
+  FILES message_mapping.yaml
+  DESTINATION share/${PROJECT_NAME}
+)
+
 
 ament_package()
