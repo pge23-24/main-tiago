@@ -40,11 +40,5 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-catkin_install_python(PROGRAMS scripts/obstacles_tracker.py
-DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
-catkin_install_python(PROGRAMS scripts/obstacles_cluster.py
-DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
 catkin_install_python(PROGRAMS scripts/local_costmap_inflation.py
 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
