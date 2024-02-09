@@ -21,7 +21,7 @@ extern int serial;
 #define CMD_VEL_TOPIC "/mobile_base_controller/cmd_vel"
 #define JOY_TOPIC "/joy"
 #define RECOVERY_TOPIC "/move_base/recovery_status"
-#define HUMAN_DETECTION_TOPIC "/multi_obstacles_tracker/camera_detections"
+#define HUMAN_DETECTION_TOPIC "/camera_detection_1"
 #define STOP_DURATION 2.0
 
 //SPOT = Relay 1

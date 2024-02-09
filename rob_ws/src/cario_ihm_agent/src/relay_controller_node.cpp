@@ -175,7 +175,8 @@ void RelayControlNode::is_recovery_actif(const move_base_msgs::RecoveryStatus& m
 
 void RelayControlNode::is_human_detected(const multi_obstacles_tracker_msgs::CameraDetectionStampedArray& msg) {
   for (int i = 0; i < msg.detections.size(); i++) {
-    if (msg.detections[i].classification == "person" && (msg.detections[i].coordinates[1] >= 30.0 && msg.detections[i].coordinates[1] <= 330.0) && msg.detections[i].coordinates[0] <= 2.0) {
+    if (msg.detections[i].classification == "person" && (msg.detections[i].coordinates[1] <= sin(30.0) && msg.detections[i].coordinates[1] >= sin(330.0)) && msg.detections[i].coordinates[0] <= 2.0) {
+      ROS_INFO("%s", msg.detections[i].classification);
       person_detected = true;
       return;
     }
