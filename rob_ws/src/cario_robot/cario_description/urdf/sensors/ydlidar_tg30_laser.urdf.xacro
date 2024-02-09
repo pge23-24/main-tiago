@@ -10,7 +10,7 @@
 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/ydlidar_tg30_laser.gazebo.xacro" />
+  <xacro:include filename="$(find cario_description)/urdf/sensors/ydlidar_tg30_laser.gazebo.xacro" />
 
   <xacro:macro name="ydlidar_tg30_laser" params="name parent *origin ros_topic update_rate min_angle max_angle">
 
@@ -25,7 +25,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://pmb2_description/meshes/sensors/ydlidar.dae"/>
+          <mesh filename="package://cario_description/meshes/sensors/ydlidar.dae"/>
         </geometry>
         <material name="DarkGrey"/>
       </visual>

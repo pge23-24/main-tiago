@@ -8,15 +8,8 @@ project(cario_rviz)
 # REQUIRED COMPONENTS xyz) is used, also find other catkin packages
 find_package(
   catkin REQUIRED
-  COMPONENTS gazebo_plugins
-             gazebo_ros
-             pal_gazebo_plugins
-             pal_gazebo_worlds
-             pal_hardware_gazebo
-             pmb2_bringup
-             pmb2_controller_configuration_gazebo
-             pmb2_description
-             simple_models_gazebo)
+  COMPONENTS cario_bringup)
+             # carios_description)
 
 # System dependencies are found with CMake's conventions find_package(Boost
 # REQUIRED COMPONENTS system)
@@ -84,7 +77,7 @@ find_package(
 catkin_package(
   # INCLUDE_DIRS include LIBRARIES cario_rviz CATKIN_DEPENDS gazebo_plugins
   # gazebo_ros pal_gazebo_plugins pal_gazebo_worlds pal_hardware_gazebo
-  # pmb2_bringup pmb2_controller_configuration_gazebo pmb2_description
+  # pmb2_bringup pmb2_controller_configuration_gazebo cario_description
   # simple_models_gazebo DEPENDS system_lib
 )
 

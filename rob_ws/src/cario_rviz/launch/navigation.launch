@@ -41,7 +41,7 @@
     args="set /move_base/TebLocalPlannerROS max_vel_theta 1.5"
     />
 
-  <include file="$(find multi_obstacles_traker)/launch/local_costmap_inflater.launch"/>
+  <include file="$(find multi_obstacles_tracker)/launch/local_costmap_inflater.launch"/>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />

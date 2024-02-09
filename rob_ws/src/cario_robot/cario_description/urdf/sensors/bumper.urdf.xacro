@@ -15,7 +15,7 @@
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/bumper.gazebo.xacro" />
+  <xacro:include filename="$(find cario_description)/urdf/sensors/bumper.gazebo.xacro" />
 
   <xacro:macro name="bumper" params="name parent ros_topic update_rate *origin">
 
@@ -30,14 +30,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://pmb2_description/meshes/sensors/bumper.stl"/>
+          <mesh filename="package://cario_description/meshes/sensors/bumper.stl"/>
         </geometry>
         <material name="DarkGrey"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://pmb2_description/meshes/sensors/bumper_collision.stl"/>
+          <mesh filename="package://cario_description/meshes/sensors/bumper_collision.stl"/>
         </geometry>
         <material name="DarkGrey"/>
       </collision>
