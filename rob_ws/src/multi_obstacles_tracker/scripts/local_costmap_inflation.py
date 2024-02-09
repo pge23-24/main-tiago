@@ -18,7 +18,7 @@ class LocalCostMapInflation:
         self.costmap_sub_ = rospy.Subscriber("/to_inflate_costmap", OccupancyGrid, self.costmapCallback)
 
         # subscribe to the topic /information_1
-        self.camera_detection_sub_ = rospy.Subscriber("/information_1", CameraDetectionStampedArray, self.inflateCallback)
+        self.camera_detection_sub_ = rospy.Subscriber("/camera_detection_1", CameraDetectionStampedArray, self.inflateCallback)
 
         # subscribe to the topic /mobile_base_controller/odom
         self.odom_sub_ = rospy.Subscriber("/mobile_base_controller/odom", Odometry, self.odomCallback)
