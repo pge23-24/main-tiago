@@ -10,7 +10,7 @@ from multi_obstacles_tracker_msgs.msg import CameraDetectionStampedArray
 from scipy.ndimage import gaussian_filter
 
 costmap_mutex = threading.Lock()
-odom_mutex = threading.Lock()
+detections_mutex = threading.Lock()
 
 
 class LocalCostMapInflation:
@@ -22,12 +22,14 @@ class LocalCostMapInflation:
 
         # subscribe to the topic /information_1
         self.camera_detection_sub_ = rospy.Subscriber(
-            "/camera_detection_1", CameraDetectionStampedArray, self.inflateCallback
+            "/camera_detection_1", CameraDetectionStampedArray, self.detectionsCallback
         )
 
         # subscribe to the topic /mobile_base_controller/odom
         self.odom_sub_ = rospy.Subscriber(
-            "/mobile_base_controller/odom", Odometry, self.odomCallback
+            "/mobile_base_controller/odom",
+            Odometry,
+            self.inflateCallback,
         )
 
         # Publish to the topic /measures
@@ -39,7 +41,7 @@ class LocalCostMapInflation:
         self.costmap = None
 
         # the current odom
-        self.odom = None
+        self.detections = None
 
         # inflation dist
         self.inflation_dist = 0.5
@@ -47,17 +49,17 @@ class LocalCostMapInflation:
         # spin it
         rospy.spin()
 
-    def odomCallback(self, odom: Odometry):
-        with odom_mutex:
-            self.odom = odom
-        # print('odom acquired')
+    def detectionsCallback(self, detections: CameraDetectionStampedArray):
+        with detections_mutex:
+            self.detections = detections
+        # print('detections acquired')
 
     def costmapCallback(self, costmap: OccupancyGrid):
         with costmap_mutex:
             self.costmap = costmap
         # print("costmap received")
 
-    def inflateCallback(self, detections: CameraDetectionStampedArray):
+    def inflateCallback(self, odom: Odometry):
         # copy the current map
         # print("synch")
         with costmap_mutex:
@@ -79,9 +81,9 @@ class LocalCostMapInflation:
         resolution = inflated_costmap.info.resolution
 
         # get rotation angle between odom and map
-        with odom_mutex:
-            odom = self.odom
-        if odom is None:
+        with detections_mutex:
+            detections = self.detections
+        if detections is None:
             # print("aborted odom")
             return
         quaternion = (
@@ -95,7 +97,6 @@ class LocalCostMapInflation:
 
         for detection in detections.detections:
             # check if class is a person
-            print(detection.classification)
             if detection.classification != "person":
                 continue
 
@@ -105,8 +106,8 @@ class LocalCostMapInflation:
             c = detection.covariance[2]
 
             # get minor major axes and theta
-            lambda_1 = np.abs((a + c) / 2 + np.sqrt(((a - c) ** 2) / 4 + b**2))
-            lambda_2 = np.abs((a + c) / 2 - np.sqrt(((a - c) ** 2) / 4 + b**2))
+            lambda_1 = 6.1 * np.abs((a + c) / 2 + np.sqrt(((a - c) ** 2) / 4 + b**2))
+            lambda_2 = 6.1 * np.abs((a + c) / 2 - np.sqrt(((a - c) ** 2) / 4 + b**2))
             theta = 0
             if b == 0 and a >= c:
                 theta = 0
@@ -116,10 +117,11 @@ class LocalCostMapInflation:
                 theta = np.arctan2(lambda_1 - a, b)
 
             # get center of the ellipse in meter
+            print(-detection.coordinates[1])
             ellipse_center = detection.coordinates[0] * np.array(
                 [
-                    np.cos(detection.coordinates[1] * np.pi / 180.0),
-                    np.sin(detection.coordinates[1] * np.pi / 180.0),
+                    np.cos(-detection.coordinates[1] * np.pi / 180.0),
+                    np.sin(-detection.coordinates[1] * np.pi / 180.0),
                 ]
             )
 
