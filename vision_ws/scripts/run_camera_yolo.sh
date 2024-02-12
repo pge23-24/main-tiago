@@ -7,5 +7,8 @@ source install/setup.bash
 cam_id=${1:-1}
 echo "Cam : $cam_id"
 
+yolo_version=${2:-8}
+echo "yolo_version : $yolo_version"
+
 # Exécuter camera_yolo avec l'identifiant de la caméra
-ros2 run py_pubsub camera_yolo --ros-args -p cam_id:=$cam_id
+ros2 run py_pubsub camera_yolo --ros-args -p cam_id:=$cam_id -p yolo_version:=$yolo_version

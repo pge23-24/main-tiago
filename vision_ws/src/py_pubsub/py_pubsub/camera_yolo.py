@@ -21,24 +21,61 @@ models_path = "models/"
 
 class YOLOv8Detector:
     type = "YOLOv8"
+
     def __init__(self):
         try:
-            self.model = YOLO(f"{models_path}yolov8s.pt")
+            self.model = YOLO(f"{models_path}v8_custom_chariot.pt")
         except Exception as e:
             LOGGER.error(f"Error loading default YOLOv8 model. {e}")
 
     def compute(self, image):
         if image is not None:
-            results = self.model.track(image, persist=True, tracker="bytetrack.yaml")
+            results = self.model.track(
+                image, conf=0.0, persist=True, tracker="bytetrack.yaml"
+            )
+            return results
+
+
+class YOLOv5Detector:
+    type = "YOLOv5"
+
+    def __init__(self, model_name=f"{models_path}/yolv5l_custom.pt"):
+        # Load YOLOv5 model
+        try:
+            self.model = torch.hub.load(
+                "ultralytics/yolov5",
+                "custom",
+                path=f"{models_path}yolv5l_custom.pt",
+            )
+        except Exception as e:
+            LOGGER.error(
+                f"Error loading custom YOLOv5 model. {e} \nLoading default model."
+            )
+            try:
+                self.model = YOLO(model_name)
+            except Exception as e:
+                LOGGER.error(f"Error loading default YOLOv5 model. {e}")
+                self.model = None
+
+    def compute(self, image):
+        """Process a single image"""
+        if image is not None:
+            results = self.model(image)
             return results
 
 
 class MinimalPublisher(Node):
     def __init__(self):
         super().__init__("minimal_publisher")
-        self.declare_parameter('cam_id', 1)
-        
-        self.camera_id = self.get_parameter('cam_id').get_parameter_value().integer_value
+        self.declare_parameter("cam_id", 1)
+        self.declare_parameter("yolo_version", 8)
+
+        self.camera_id = (
+            self.get_parameter("cam_id").get_parameter_value().integer_value
+        )
+        self.yolo_version = (
+            self.get_parameter("yolo_version").get_parameter_value().integer_value
+        )
 
         # Publishers
         self.topic_name_image = f"annotated_images_{ self.camera_id}"
@@ -57,12 +94,14 @@ class MinimalPublisher(Node):
         )
         self._cv_bridge = CvBridge()
 
-        self.detector = YOLOv8Detector()
+        if self.yolo_version == 8:
+            self.detector = YOLOv8Detector()
+        if self.yolo_version == 5:
+            self.detector = YOLOv5Detector()
 
         self.get_logger().info(
-            f"Camera { self.camera_id} Node has started"
+            f"Camera { self.camera_id} Yolo {self.detector.type} Node has started"
         )
-        
 
     def toData(self, result, classes):
         bounding_box_height = result[3] - result[1]
@@ -84,23 +123,6 @@ class MinimalPublisher(Node):
 
         return bounding_box_height, angle_min % 360, angle_max % 360, class_name
 
-    def formalize_detection(self, results, height, width):
-        labels, cord = results
-        detections = []
-        n = len(labels)
-        for i in range(n):
-            row = cord[i]
-            x1, y1, x2, y2 = (
-                int(row[0] * width),
-                int(row[1] * height),
-                int(row[2] * width),
-                int(row[3] * height),
-            )
-            score = float(row[4].item())
-            name = self.detector.model.names[int(labels[i])]
-            detections.append(([x1, y1, int(x2 - x1), int(y2 - y1)], score, name))
-        return detections
-
     def listener_callback(self, image):
         start = time.time()
         self.get_logger().info(f"Image received from Camera {self.camera_id}")
@@ -112,11 +134,19 @@ class MinimalPublisher(Node):
         results = self.detector.compute(cv_image)
         if results:
             # Annotated image part
-            # YOLOv8
-            
-            annotated_image = results[0].plot()
-            new_results = results[0].boxes.data.cpu().tolist()
-            class_names = results[0].names
+            # check type of results
+            # YOLOv8-v5
+            if isinstance(results, list):
+                annotated_image = results[0].plot()
+                new_results = results[0].boxes.data.cpu().tolist()
+                class_names = results[0].names
+
+            # yoloV5
+            else:
+                annotated_image = results.render()[0]
+                # For information datas
+                new_results = results.xyxy[0].cpu().numpy().tolist()
+                class_names = results.names
 
             encoded_annotated_image = self._cv_bridge.cv2_to_imgmsg(
                 annotated_image, "rgb8"
@@ -141,12 +171,11 @@ class MinimalPublisher(Node):
                     element for row in covariance_matrix for element in row
                 ]
 
-
                 informations.classification = class_name
                 informations.coordinates = [distance_centroid, theta_moy]
 
                 informations.covariance = flattened_covariance_matrix
-                
+
                 info_array.detections.append(informations)
 
             self.publisher_information.publish(info_array)
