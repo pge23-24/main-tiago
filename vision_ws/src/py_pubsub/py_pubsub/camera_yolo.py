@@ -24,14 +24,14 @@ class YOLOv8Detector:
 
     def __init__(self):
         try:
-            self.model = YOLO(f"{models_path}v8_custom_chariot.pt")
+            self.model = YOLO(f"{models_path}best.pt")
         except Exception as e:
             LOGGER.error(f"Error loading default YOLOv8 model. {e}")
 
     def compute(self, image):
         if image is not None:
             results = self.model.track(
-                image, conf=0.0, persist=True, tracker="bytetrack.yaml"
+                image, conf=0.3, persist=True, tracker="bytetrack.yaml", classes=[0, 80]
             )
             return results
 
