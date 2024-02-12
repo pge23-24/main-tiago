@@ -108,6 +108,9 @@ class MinimalPublisher(Node):
         x_min, x_max = result[0], result[2]
         angle_min = (x_min - 0.5 * IMAGE_WIDTH) * (CAMERA_ANGLE / IMAGE_WIDTH)
         angle_max = (x_max - 0.5 * IMAGE_WIDTH) * (CAMERA_ANGLE / IMAGE_WIDTH)
+        angle_moy = (((x_min + x_max) / 2) - 0.5 * IMAGE_WIDTH) * (
+            CAMERA_ANGLE / IMAGE_WIDTH
+        )
         if self.camera_id == 4:
             angle_min = angle_min - 90
             angle_max = angle_max - 90
@@ -121,7 +124,9 @@ class MinimalPublisher(Node):
         class_id = int(result[-1])  # Get class ID
         class_name = classes[class_id]  # Get class name
 
-        return bounding_box_height, angle_min % 360, angle_max % 360, class_name
+
+        return bounding_box_height, angle_min, angle_max, angle_moy, class_name
+
 
     def listener_callback(self, image):
         start = time.time()

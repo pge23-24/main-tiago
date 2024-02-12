@@ -15,7 +15,7 @@
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
- <xacro:include filename="$(find pmb2_description)/urdf/sensors/elp_rgb.gazebo.xacro" />
+ <xacro:include filename="$(find cario_description)/urdf/sensors/elp_rgb.gazebo.xacro" />
 
   <!-- Macro -->
   <xacro:macro name="elp_rgb" params="name parent *origin *optical_origin">
@@ -39,7 +39,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 90 0"/>
         <geometry>
-          <mesh filename="package://pmb2_description/meshes/sensors/elp_camera.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://cario_description/meshes/sensors/elp_camera.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="Grey" />
       </visual>

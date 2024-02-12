@@ -4,7 +4,7 @@
 Header header
 
 # Class of the detection
-string class
+string classification
 
 # Polar coordinates (rho, theta) of the detection in the frame given in the header.
 float32[2] coordinates

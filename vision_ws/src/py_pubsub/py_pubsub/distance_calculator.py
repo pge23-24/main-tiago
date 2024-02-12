@@ -112,8 +112,8 @@ class DistanceCalculator:
             r_max = 5.5
         return (r_min + r_max) / 2
 
-    def covariance_matrix_from_data(self, data: [float, float, float, str]):
-        bounding_box_height, angle_min, angle_max, class_name = data
+    def covariance_matrix_from_data(self, data: [float, float, float, float, str]):
+        bounding_box_height, angle_min, angle_max, theta_moy, class_name = data
         distance_centroid = self.centroid_distance(
             bb_height=bounding_box_height, classification=class_name
         )
@@ -131,6 +131,5 @@ class DistanceCalculator:
             class_name,
             is_major_axis=False,
         )
-        theta_moy = (angle_min + angle_max) / 2
         covariance_matrix = self.covariance_matrix_from_ellipse(a, b, theta_moy)
         return covariance_matrix, distance_centroid, theta_moy, class_name

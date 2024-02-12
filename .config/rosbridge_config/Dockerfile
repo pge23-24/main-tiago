@@ -1,6 +1,3 @@
-ARG ROS1_WS=/ros1_ws
-ARG ROS2_WS=/ros2_ws
-
 # Dockerfile to bridge the ros1 and ros2 messages
 #
 # Build the ros1 messages
@@ -8,7 +5,7 @@ ARG ROS2_WS=/ros2_ws
 FROM cario360/ros-tiago:latest as ros1_builder
 
 WORKDIR /workspace
-COPY /ros1_ws/src /workspace/src/ros1_packages
+COPY /rob_ws/src /workspace/src/ros1_packages
 
 RUN catkin config --install -DCMAKE_INSTALL_PREFIX=/opt/ros/noetic 
 
@@ -23,7 +20,7 @@ RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bash_profile
 
 WORKDIR /workspace
 
-COPY /ros2_ws/src /workspace/src/ros2_packages
+COPY /vision_ws/src /workspace/src/ros2_packages
 
 #
 # Build the ros1_bridge
@@ -40,11 +37,21 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main"
   && rm -rf /var/lib/apt/lists/*
 
 
+
 # Get the ros messages
 COPY --from=ros1_builder /opt/ros/noetic /opt/ros/noetic
+# get ros/tf for ros1 
+RUN apt-get update && apt-get install -y \
+  ros-noetic-tf
+
+
 
 # Get the ros2 messages
 COPY --from=ros2_builder /opt/ros/foxy /opt/ros/foxy
+# get ros/tf2 for ros2
+RUN apt-get update && apt-get install -y \
+  ros-foxy-tf2
+
 
 
 # Deps for the bridge
