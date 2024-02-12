@@ -23,9 +23,9 @@ extern int serial;
 #define RECOVERY_TOPIC "/move_base/recovery_status"
 #define STOP_DURATION 2.0
 
-#define SPOT_T_ON 0.5
-#define SPOT_T_OFF 0.5
-#define BUFFER_SIZE 10;
+#define SPOT_T_ON 0.1
+#define SPOT_T_OFF 0.1
+#define BUFFER_SIZE 10
 
 //SPOT = Relay 1
 #define SPOT_ON "\x65"
@@ -63,16 +63,14 @@ class RelayControlNode {
 
  private:
   ros::Subscriber sub_cmd_vel, sub_joystick, sub_recovery;
-  ros::Timer timer;
 
   // Déclaration du buffer circulaire pour les vitesses linéaires et angulaires
   float linear_vel_buffer[BUFFER_SIZE];
   float angular_vel_buffer[BUFFER_SIZE];
   int current_index;
-  ros::Time timerStart;
+  double timerStart;
 
   int serial;
-  ros::Time timerStart = ros::Time::now();
   SpotState spot_state = ETEINT;
   BlinkState blink_state = B_ETEINT;
   MatState mat_state = IDLE_NAV;

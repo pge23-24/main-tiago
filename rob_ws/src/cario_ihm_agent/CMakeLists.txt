@@ -25,13 +25,10 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(${NODE_NAME} src/relay_controller_node.cpp)
+add_executable(${NODE_NAME} src/robot_spot.cpp)
 
 # Move add_dependencies after add_executable
 add_dependencies(${NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS}
                  ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(${NODE_NAME} ${catkin_LIBRARIES})
-
-set(PARENT_PROJECT_NAME ${PROJECT_NAME})
-add_subdirectory(test)

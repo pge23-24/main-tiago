@@ -34,8 +34,7 @@ RelayControlNode::RelayControlNode(ros::NodeHandle nh, const char* port, int bau
                                   &RelayControlNode::is_joy_actif, this);
   this->sub_recovery = nh.subscribe(RECOVERY_TOPIC, 1000, 
                                   &RelayControlNode::is_recovery_actif, this);
-  this->timer = nh.createTimer(ros::Duration(0.2),
-                                      &RelayControlNode::timer_callback, this);
+  
   this->init_success = true;
 
   // Initialize buffers
@@ -76,13 +75,13 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
   current_index = (current_index + 1) % BUFFER_SIZE;
 
   // Calcul moyennes glissantes vitesses
-  vit_lin = this->compute_mean(this->linear_vel_buffer);
-  vit_ang = this->compute_mean(this->angular_vel_buffer);
+  float vit_lin = this->compute_mean(this->linear_vel_buffer);
+  float vit_ang = this->compute_mean(this->angular_vel_buffer);
 
   // Calcul des conditions de la MAE
   bool vit_lin_null = abs(vit_lin) <= 0.01;  //vitesse linéaire
 	bool vit_ang_null = abs(vit_ang) <= 0.01; //vitesse angulaire
-	bool humain = false; //pour la détection 
+	bool humain = true; //pour la détection 
 
   // Mise à jour état MAE
   switch (spot_state) {
@@ -103,7 +102,7 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
 				ROS_INFO("Robot moving, spot stays ON");
 				spot_state = ALLUME;
 		} 
-		else if ((vit_lin_null || vit_ang_null)) { // time fini donc s'éteint
+		else if (vit_lin_null && vit_ang_null) { // time fini donc s'éteint
 				ROS_INFO("Robot not moving anymore, spot turns OFF");
 				spot_state = ETEINT;
 		} 
@@ -115,7 +114,7 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
         this->blink_state = B_ETEINT;
         spot_state = CLIGNOTANT;
       }
-			if (vit_lin && vit_ang) {
+			if (vit_lin_null && vit_ang_null) {
 				ROS_INFO("Robot not moving anymore, spot turns OFF");
 				spot_state = ETEINT ;
 			}
@@ -123,6 +122,8 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
   }
 
   // Actions sur états
+  float elapsed_time;
+
   switch(spot_state)
   {
     case ETEINT:
@@ -132,13 +133,13 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
     case CLIGNOTANT:
       switch(blink_state) {
         case B_ETEINT:
-          this->timerStart = ros::Time::now();  
+          this->timerStart = ros::Time::now().toSec();  
           write(this->serial, SPOT_ON, 1);
           blink_state = B_WAIT1;
         break;
         
         case B_WAIT1:
-          elapsed_time = ros::Time::now() - this->timerStart;
+          elapsed_time = ros::Time::now().toSec() - this->timerStart;
           if(elapsed_time >= SPOT_T_ON)
           {
             blink_state = B_ALLUME;
@@ -146,13 +147,13 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
         break;
 
         case B_ALLUME:
-          this->timerStart = ros::Time::now();  
+          this->timerStart = ros::Time::now().toSec();  
           write(this->serial, SPOT_OFF, 1);
           blink_state = B_WAIT2;
         break;
 
         case B_WAIT2:
-          elapsed_time = ros::Time::now() - this->timerStart;
+          elapsed_time = ros::Time::now().toSec() - this->timerStart;
           if(elapsed_time >= SPOT_T_OFF)
           {
             blink_state = B_ETEINT;
