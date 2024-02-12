@@ -6,7 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(NODE_NAME relay_controller)
 
-find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS 
+roscpp
+geometry_msgs
+rospy
+std_msgs
+multi_obstacles_tracker_msgs
+)
 
 catkin_package(
   INCLUDE_DIRS
