@@ -33,12 +33,42 @@ RelayControlNode::RelayControlNode(ros::NodeHandle nh, const char* port, int bau
   this->sub_joystick = nh.subscribe(JOY_TOPIC, 1000,
                                   &RelayControlNode::is_joy_actif, this);
   this->sub_recovery = nh.subscribe(RECOVERY_TOPIC, 1000, 
-                                  &RelayControlNode::is_recovery_actif, this);
+                                  &RelayControlNode::is_recovery_actif, this);  
+  this->sub_camera_detection = nh.subscribe(CAMERA_TOPIC, 10, &RelayControlNode::camera_detection_callback, this);
   
   this->init_success = true;
 
   // Initialize buffers
   this->init_buffer();
+
+  this->human_in_fov = false;
+}
+
+void RelayControlNode::camera_detection_callback(const multi_obstacles_tracker_msgs::CameraDetectionStampedArray& msg)
+{
+  bool res = false;
+  for(auto i = 0; i < msg.detections.size(); i++)
+  {
+    // ROS_INFO(
+    //   "%s, %f < %f < %f", 
+    //   msg.detections[i].classification.c_str(), sin((360 - HALF_FOV_DEG)*3.14/180.0), 
+    //   sin(msg.detections[i].coordinates[1]*3.14/180.0),
+    //   sin(HALF_FOV_DEG*3.14/180.0)
+    //   );
+
+    if(msg.detections[i].classification == "person")
+    {
+      if(sin((360 - HALF_FOV_DEG)*3.14/180.0) <= sin(msg.detections[i].coordinates[1]*3.14/180.0)
+      && sin(HALF_FOV_DEG*3.14/180.0) >= sin(msg.detections[i].coordinates[1]*3.14/180.0))
+      {
+        res = true;
+      }
+    }
+  }
+
+  this->detection_mutex.lock();
+  this->human_in_fov = res;
+  this->detection_mutex.unlock();
 }
 
 void RelayControlNode::shutdown()
@@ -81,7 +111,9 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
   // Calcul des conditions de la MAE
   bool vit_lin_null = abs(vit_lin) <= 0.01;  //vitesse linéaire
 	bool vit_ang_null = abs(vit_ang) <= 0.01; //vitesse angulaire
-	bool humain = true; //pour la détection 
+  this->detection_mutex.lock();
+  bool humain = this->human_in_fov;
+  this->detection_mutex.unlock();
 
   // Mise à jour état MAE
   switch (spot_state) {
