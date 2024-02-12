@@ -44,7 +44,7 @@ class LocalCostMapInflation:
         self.detections = None
 
         # inflation dist
-        self.inflation_dist = 0.5
+        self.inflation_dist = 1
 
         # spin it
         rospy.spin()
@@ -105,9 +105,13 @@ class LocalCostMapInflation:
             b = detection.covariance[1]
             c = detection.covariance[2]
 
+            # a = 1
+            # b = 0
+            # c = 0
+
             # get minor major axes and theta
-            lambda_1 = 6.1 * np.abs((a + c) / 2 + np.sqrt(((a - c) ** 2) / 4 + b**2))
-            lambda_2 = 6.1 * np.abs((a + c) / 2 - np.sqrt(((a - c) ** 2) / 4 + b**2))
+            lambda_1 = 1.5 * np.abs((a + c) / 2 + np.sqrt(((a - c) ** 2) / 4 + b**2))
+            lambda_2 = 1.5 * np.abs((a + c) / 2 - np.sqrt(((a - c) ** 2) / 4 + b**2))
             theta = 0
             if b == 0 and a >= c:
                 theta = 0
@@ -117,7 +121,6 @@ class LocalCostMapInflation:
                 theta = np.arctan2(lambda_1 - a, b)
 
             # get center of the ellipse in meter
-            print(-detection.coordinates[1])
             ellipse_center = detection.coordinates[0] * np.array(
                 [
                     np.cos(-detection.coordinates[1] * np.pi / 180.0),
