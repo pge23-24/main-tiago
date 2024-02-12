@@ -103,7 +103,7 @@ class LocalCostMapInflation:
             # get covariance matrix components
             a = detection.covariance[0]
             b = detection.covariance[1]
-            c = detection.covariance[2]
+            c = detection.covariance[3]
 
             # a = 1
             # b = 0
