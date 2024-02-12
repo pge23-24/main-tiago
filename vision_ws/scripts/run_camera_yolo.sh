@@ -7,11 +7,8 @@ source install/setup.bash
 cam_id=${1:-1}
 echo "Cam : $cam_id"
 
-yolo_version=${2:-v8}
-echo "Yolo : $yolo_version"
-
-tracker_enabled=${3:-False}
-echo "Tracker : $tracker_enabled"
+yolo_version=${2:-8}
+echo "yolo_version : $yolo_version"
 
 # Exécuter camera_yolo avec l'identifiant de la caméra
-ros2 run py_pubsub camera_yolo --cam $cam_id --yolo $yolo_version --tracker $tracker_enabled
+ros2 run py_pubsub camera_yolo --ros-args -p cam_id:=$cam_id -p yolo_version:=$yolo_version

@@ -24,7 +24,7 @@ class YOLOv8Detector:
 
     def __init__(self):
         try:
-            self.model = YOLO(f"{models_path}yolov8s.pt")
+            self.model = YOLO(f"{models_path}best.pt")
         except Exception as e:
             LOGGER.error(f"Error loading default YOLOv8 model. {e}")
 
@@ -124,7 +124,9 @@ class MinimalPublisher(Node):
         class_id = int(result[-1])  # Get class ID
         class_name = classes[class_id]  # Get class name
 
+
         return bounding_box_height, angle_min, angle_max, angle_moy, class_name
+
 
     def listener_callback(self, image):
         start = time.time()
