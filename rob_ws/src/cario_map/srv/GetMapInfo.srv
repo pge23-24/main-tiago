@@ -1,8 +1,0 @@
-# GetMapInfo.srv
----
-bool success
-sensor_msgs/Image map
-float64 resolution
-float64[] origin
-float64 occupied_thresh
-float64 free_thresh

@@ -15,17 +15,17 @@
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <xacro:include filename="$(find pmb2_description)/urdf/base/base.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/base/base.urdf.xacro"/>
 
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/hokuyo_urg_04lx_ug01_laser.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/sick_tim551_laser.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/sick_tim561_laser.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/sick_tim571_laser.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/ydlidar_tg30_laser.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/ydlidar_tg15_laser.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/sensors/hokuyo_urg_04lx_ug01_laser.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/sensors/sick_tim551_laser.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/sensors/sick_tim561_laser.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/sensors/sick_tim571_laser.urdf.xacro"/>
+  <!-- <xacro:include filename="$(find cario_description)/urdf/sensors/ydlidar_tg30_laser.urdf.xacro"/> -->
+  <!-- <xacro:include filename="$(find cario_description)/urdf/sensors/ydlidar_tg15_laser.urdf.xacro"/> -->
 
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/range.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/microphone.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/sensors/range.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/sensors/microphone.urdf.xacro"/>
 
   <!-- Laser characteristics -->
   <xacro:property name="base_laser_x" value="0.202"/>
@@ -88,21 +88,17 @@
 
     </xacro:if>
 
-    <xacro:if value="${laser_model == 'ydlidar-tg30'}">
-      <!-- Laser -->
-      <!-- Theoretic FOV = 360 -->
+    <!-- <xacro:if value="${laser_model == 'ydlidar-tg30'}">
       <xacro:ydlidar_tg30_laser name="${name}_laser" parent="${name}" ros_topic="scan_raw" update_rate="10" min_angle="${-65* deg_to_rad}" max_angle="${125 * deg_to_rad}" >
         <origin xyz="${base_laser_x} ${base_laser_y} ${base_laser_z}" rpy="0 0 ${ -30 * deg_to_rad }" />
       </xacro:ydlidar_tg30_laser>
     </xacro:if>
 
     <xacro:if value="${laser_model == 'ydlidar-tg15'}">
-      <!-- Laser -->
-      <!-- Theoretic FOV = 360 -->
       <xacro:ydlidar_tg15_laser name="${name}_laser" parent="${name}" ros_topic="scan_raw" update_rate="10" min_angle="${-65 * deg_to_rad}" max_angle="${125 * deg_to_rad}" >
         <origin xyz="${base_laser_x} ${base_laser_y} ${base_laser_z}" rpy="0 0 ${ -30 * deg_to_rad }" />
       </xacro:ydlidar_tg15_laser>
-    </xacro:if>
+    </xacro:if> -->
 
     <xacro:if value="${sonars}">
 

@@ -1,6 +1,0 @@
-image: usine_v1.pgm
-resolution: 0.025000
-origin: [-12.420736, -11.446746, 0.000000]
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.196

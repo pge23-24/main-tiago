@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<launch>
-  <include file="$(find cario_gazebo)/launch/cario_gazebo.launch">
-    <arg name="world" value="empty" />
-  </include>
-</launch>

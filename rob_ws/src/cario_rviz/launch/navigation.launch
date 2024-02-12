@@ -2,9 +2,16 @@
   <arg name="robot_speed" default="0.3"/>
 
   <include file="$(find cario_robot_model)/launch/upload.launch">
-    <arg name="laser_model"   default="sick-571"/>
+    <arg name="laser_model"   default="sick-561"/> <!-- sick-571 by default -->
     <arg name="rgbd_sensors"  default="false"/>
   </include>
+
+  <node
+    name="dyn_reconfigure_local_planner"
+    pkg="dynamic_reconfigure"
+    type="dynparam"
+    args="set /move_base base_local_planner teb_local_planner/TebLocalPlannerROS"
+    />
 
   <node
     name="dyn_reconfigure_max_speed_x"
@@ -33,6 +40,8 @@
     type="dynparam"
     args="set /move_base/TebLocalPlannerROS max_vel_theta 1.5"
     />
+
+  <include file="$(find multi_obstacles_tracker)/launch/local_costmap_inflater.launch"/>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />

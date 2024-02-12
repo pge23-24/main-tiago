@@ -31,8 +31,6 @@ add_executable(${NODE_NAME} src/relay_controller_node.cpp)
 add_dependencies(${NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS}
                  ${catkin_EXPORTED_TARGETS})
 
-# target_include_directories(get_map PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
 target_link_libraries(${NODE_NAME} ${catkin_LIBRARIES})
 
 set(PARENT_PROJECT_NAME ${PROJECT_NAME})

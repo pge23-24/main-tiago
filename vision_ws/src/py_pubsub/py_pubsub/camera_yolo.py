@@ -9,7 +9,7 @@ from ultralytics import YOLO  # YOLOv8 import
 from ultralytics.utils import LOGGER  # LOGGER import
 import torch
 import time
-from deep_sort_realtime.deepsort_tracker import DeepSort
+
 
 from py_pubsub_msgs.msg import CameraDetectionStamped
 from py_pubsub_msgs.msg import CameraDetectionStampedArray
@@ -222,12 +222,11 @@ class MinimalPublisher(Node):
                     element for row in covariance_matrix for element in row
                 ]
 
-
                 informations.classification = class_name
                 informations.coordinates = [distance_centroid, theta_moy]
 
                 informations.covariance = flattened_covariance_matrix
-                
+
                 info_array.detections.append(informations)
 
             self.publisher_information.publish(info_array)

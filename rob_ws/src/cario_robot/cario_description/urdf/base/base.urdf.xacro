@@ -16,13 +16,13 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
 
-  <xacro:include filename="$(find pmb2_description)/urdf/wheels/wheel.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/wheels/caster.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/wheels/wheel.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/wheels/caster.urdf.xacro"/>
 
-  <xacro:include filename="$(find pmb2_description)/urdf/sensors/imu.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/sensors/imu.urdf.xacro"/>
 
-  <xacro:include filename="$(find pmb2_description)/urdf/objects/cover.urdf.xacro"/>
-  <xacro:include filename="$(find pmb2_description)/urdf/objects/antenna.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/objects/cover.urdf.xacro"/>
+  <xacro:include filename="$(find cario_description)/urdf/objects/antenna.urdf.xacro"/>
 
   <!-- Wheel characteristics -->
   <xacro:property name="wheel_radius"     value="0.0985"/>
@@ -54,14 +54,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://pmb2_description/meshes/base/base.stl" />
+          <mesh filename="package://cario_description/meshes/base/base.stl" />
         </geometry>
         <material name="White" />
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://pmb2_description/meshes/base/base_collision.stl" />
+          <mesh filename="package://cario_description/meshes/base/base_collision.stl" />
         </geometry>
         <material name="White" />
       </collision>

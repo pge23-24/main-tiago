@@ -48,34 +48,12 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>gazebo_plugins</build_depend>
-  <build_depend>gazebo_ros</build_depend>
-  <build_depend>pal_gazebo_plugins</build_depend>
-  <build_depend>pal_gazebo_worlds</build_depend>
-  <build_depend>pal_hardware_gazebo</build_depend>
-  <build_depend>pmb2_bringup</build_depend>
-  <build_depend>pmb2_controller_configuration_gazebo</build_depend>
-  <build_depend>pmb2_description</build_depend>
-  <build_depend>simple_models_gazebo</build_depend>
-  <build_export_depend>gazebo_plugins</build_export_depend>
-  <build_export_depend>gazebo_ros</build_export_depend>
-  <build_export_depend>pal_gazebo_plugins</build_export_depend>
-  <build_export_depend>pal_gazebo_worlds</build_export_depend>
-  <build_export_depend>pal_hardware_gazebo</build_export_depend>
-  <build_export_depend>pmb2_bringup</build_export_depend>
-  <build_export_depend>pmb2_controller_configuration_gazebo</build_export_depend>
-  <build_export_depend>pmb2_description</build_export_depend>
-  <build_export_depend>simple_models_gazebo</build_export_depend>
-  <exec_depend>gazebo_plugins</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
-  <exec_depend>pal_gazebo_plugins</exec_depend>
-  <exec_depend>pal_gazebo_worlds</exec_depend>
-  <exec_depend>pal_hardware_gazebo</exec_depend>
-  <exec_depend>pmb2_bringup</exec_depend>
-  <exec_depend>pmb2_controller_configuration_gazebo</exec_depend>
-  <exec_depend>pmb2_description</exec_depend>
-  <exec_depend>simple_models_gazebo</exec_depend>
-
+  <build_depend>cario_bringup</build_depend>
+  <build_depend>cario_description</build_depend>
+  <build_export_depend>cario_bringup</build_export_depend>
+  <build_export_depend>cario_description</build_export_depend>
+  <exec_depend>cario_bringup</exec_depend>
+  <exec_depend>cario_description</exec_depend>
   <!-- For get_map service -->
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
