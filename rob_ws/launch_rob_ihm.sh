@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# source workspace
+source rob_ws/devel/setup.bash
+
+# ROS export
 export ROS_MASTER_URI=http://10.68.0.1:11311
 export ROS_IP=10.68.0.132
 
