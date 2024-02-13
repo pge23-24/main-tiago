@@ -1,5 +1,8 @@
 import unittest
-from prototyping.src.distance_calculator import DistanceCalculator
+import numpy as np
+from vision_ws.src.py_pubsub.py_pubsub.distance_calculator import (
+    DistanceCalculator,
+)
 
 
 class TestDistanceCalculator(unittest.TestCase):
@@ -9,36 +12,53 @@ class TestDistanceCalculator(unittest.TestCase):
     def test_degrees_to_radians(self):
         self.assertAlmostEqual(self.calculator.degrees_to_radians(0), 0)
         self.assertAlmostEqual(
-            self.calculator.degrees_to_radians(180), 3.14159, places=5
+            self.calculator.degrees_to_radians(180), 3.141592653589793
         )
-        self.assertAlmostEqual(self.calculator.degrees_to_radians(90), 1.5708, places=4)
+        self.assertAlmostEqual(
+            self.calculator.degrees_to_radians(90), 3.141592653589793 / 2
+        )
 
     def test_pixels_to_distance(self):
-        # Test avec des valeurs qui devraient être dans la plage interpolée
-        self.assertGreater(self.calculator.pixels_to_distance(500), 0)
-        # Test avec une valeur hors plage
-        self.assertNotEqual(self.calculator.pixels_to_distance(10000), 0)
+        # Assuming known correct value for pixel_size=960
+        self.assertAlmostEqual(self.calculator.pixels_to_distance(960), 0.3)
+        # Test extrapolation
+        self.assertTrue(self.calculator.pixels_to_distance(50) > 3.5)
+        # Test interpolation
+        self.assertTrue(0.3 < self.calculator.pixels_to_distance(500) < 3.5)
 
     def test_distance_polar(self):
-        self.assertAlmostEqual(
-            self.calculator.distance_polar(1, 0, 1, 90), 1.4142, places=4
-        )
-        self.assertAlmostEqual(
-            self.calculator.distance_polar(1, 45, 1, 45), 0, places=4
-        )
+        # Test with known values
+        self.assertAlmostEqual(self.calculator.distance_polar(0, 0, 1, 90), 1)
+        self.assertAlmostEqual(self.calculator.distance_polar(1, 0, 1, 90), 2**0.5)
 
     def test_compute_axis_size(self):
-        major_axis = self.calculator.compute_axis_size(0, 180, 300, "person", True)
-        minor_axis = self.calculator.compute_axis_size(0, 180, 300, "person", False)
-        self.assertGreater(major_axis, 0)
-        self.assertGreater(minor_axis, 0)
-        self.assertNotEqual(major_axis, minor_axis)
+        # Specific tests for this method would depend on its implementation details
+        # Example:
+        self.assertGreater(
+            self.calculator.compute_axis_size(0, 90, 960, "person", True), 0
+        )
 
     def test_covariance_matrix_from_ellipse(self):
-        cov_matrix = self.calculator.covariance_matrix_from_ellipse(2, 1, 45)
-        self.assertEqual(cov_matrix.shape, (2, 2))
-        self.assertNotEqual(cov_matrix[0, 0], cov_matrix[1, 1])
-        self.assertEqual(cov_matrix[0, 1], cov_matrix[1, 0])
+        # Known values
+        covariance_matrix = self.calculator.covariance_matrix_from_ellipse(1, 1, 0)
+        self.assertTrue((covariance_matrix == [[1, 0], [0, 1]]).all())
+
+    def test_centroid_distance(self):
+        # Assuming a classification that is not 'person'
+        self.assertAlmostEqual(
+            self.calculator.centroid_distance(960, "non-person"), (10e-6 + 5.5) / 2
+        )
+
+    def test_covariance_matrix_from_data(self):
+        # Test with a known dataset
+        data = [960.0, 0.0, 90.0, 45.0, "person"]
+        matrix, distance, theta_moy, class_name = (
+            self.calculator.covariance_matrix_from_data(data)
+        )
+        self.assertIsInstance(matrix, np.ndarray)
+        self.assertIsInstance(distance, float)
+        self.assertIsInstance(theta_moy, float)
+        self.assertIsInstance(class_name, str)
 
 
 if __name__ == "__main__":

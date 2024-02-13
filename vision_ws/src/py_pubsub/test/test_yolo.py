@@ -1,26 +1,26 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from py_pubsub.yolo import YOLOv8Detector, YOLOv5Detector
+from vision_ws.src.py_pubsub.py_pubsub.yolo import YOLOv8Detector, YOLOv5Detector
 
 
 class TestYOLOv8Detector(unittest.TestCase):
-    @patch("py_pubsub.yolo.YOLO")
-    @patch("py_pubsub.yolo.LOGGER")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.YOLO")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.LOGGER")
     def test_yolov8_init_success(self, mock_logger, mock_yolo):
         """Test YOLOv8Detector initialization with successful model load."""
         detector = YOLOv8Detector()
         mock_yolo.assert_called_with("models/best.pt")
         mock_logger.error.assert_not_called()
 
-    @patch("py_pubsub.yolo.YOLO")
-    @patch("py_pubsub.yolo.LOGGER")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.YOLO")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.LOGGER")
     def test_yolov8_init_failure(self, mock_logger, mock_yolo):
         """Test YOLOv8Detector initialization with failed model load."""
         mock_yolo.side_effect = Exception("Test exception")
         detector = YOLOv8Detector()
         mock_logger.error.assert_called()
 
-    @patch("py_pubsub.yolo.YOLO")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.YOLO")
     def test_compute(self, mock_yolo):
         """Test computing detections on an image."""
         mock_model = MagicMock()
@@ -38,9 +38,9 @@ class TestYOLOv8Detector(unittest.TestCase):
 
 
 class TestYOLOv5Detector(unittest.TestCase):
-    @patch("py_pubsub.yolo.torch.hub.load")
-    @patch("py_pubsub.yolo.YOLO")
-    @patch("py_pubsub.yolo.LOGGER")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.torch.hub.load")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.YOLO")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.LOGGER")
     def test_yolov5_init_success(self, mock_logger, mock_yolo, mock_torch_hub):
         """Test YOLOv5Detector initialization with successful model load."""
         mock_torch_hub.return_value = MagicMock()
@@ -50,9 +50,9 @@ class TestYOLOv5Detector(unittest.TestCase):
         )
         mock_logger.error.assert_not_called()
 
-    @patch("py_pubsub.yolo.torch.hub.load")
-    @patch("py_pubsub.yolo.YOLO")
-    @patch("py_pubsub.yolo.LOGGER")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.torch.hub.load")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.YOLO")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.LOGGER")
     def test_yolov5_init_failure(self, mock_logger, mock_yolo, mock_torch_hub):
         """Test YOLOv5Detector initialization with failed model load and fallback."""
         mock_torch_hub.side_effect = Exception("Test exception")
@@ -61,7 +61,7 @@ class TestYOLOv5Detector(unittest.TestCase):
         mock_logger.error.assert_called()
         self.assertIsNone(detector.model)
 
-    @patch("py_pubsub.yolo.torch.hub.load")
+    @patch("vision_ws.src.py_pubsub.py_pubsub.yolo.torch.hub.load")
     def test_compute(self, mock_torch_hub):
         """Test computing detections on an image."""
         mock_model = MagicMock()

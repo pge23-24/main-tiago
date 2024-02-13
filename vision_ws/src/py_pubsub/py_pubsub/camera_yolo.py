@@ -12,7 +12,7 @@ import time
 from py_pubsub_msgs.msg import CameraDetectionStamped
 from py_pubsub_msgs.msg import CameraDetectionStampedArray
 from py_pubsub.distance_calculator import DistanceCalculator
-from py_pubsub.py_pubsub.yolo import YOLOv8Detector, YOLOv5Detector
+from py_pubsub.yolo import YOLOv8Detector, YOLOv5Detector
 
 CAMERA_ANGLE = 190
 IMAGE_WIDTH = 1344
