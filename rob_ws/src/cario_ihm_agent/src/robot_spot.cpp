@@ -31,15 +31,18 @@ RelayControlNode::RelayControlNode(ros::NodeHandle nh, const char* port, int bau
   this->sub_cmd_vel = nh.subscribe(CMD_VEL_TOPIC, 1000,
                                   &RelayControlNode::cmd_vel_callback, this);
   this->sub_joystick = nh.subscribe(JOY_TOPIC, 1000,
-                                  &RelayControlNode::is_joy_actif, this);
+                                  &RelayControlNode::joy_callback, this);
   this->sub_recovery = nh.subscribe(RECOVERY_TOPIC, 1000, 
-                                  &RelayControlNode::is_recovery_actif, this);  
+                                  &RelayControlNode::recovery_callback, this);  
   this->sub_camera_detection = nh.subscribe(CAMERA_TOPIC, 10, &RelayControlNode::camera_detection_callback, this);
-  
+
   this->init_success = true;
 
   // Initialize buffers
   this->init_buffer();
+
+  // init timestamp for gyro
+  this->latest_stamp = ros::Time::now();
 
   this->human_in_fov = false;
 }
@@ -98,7 +101,11 @@ float RelayControlNode::compute_mean(float tab[])
   return (sum / BUFFER_SIZE);
 }
 
-void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
+void RelayControlNode::cmd_vel_callback(const nav_msgs::Odometry& odom)
+{
+  // get twist
+  geometry_msgs::Twist msg = odom.twist.twist;
+
   // Mise à jour du buffer circulaire
   linear_vel_buffer[current_index] = msg.linear.x;
   angular_vel_buffer[current_index] = msg.angular.z;
@@ -107,6 +114,8 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
   // Calcul moyennes glissantes vitesses
   float vit_lin = this->compute_mean(this->linear_vel_buffer);
   float vit_ang = this->compute_mean(this->angular_vel_buffer);
+
+  // ROS_INFO("%f %f", vit_lin, vit_ang); 
 
   // Calcul des conditions de la MAE
   bool vit_lin_null = abs(vit_lin) <= 0.01;  //vitesse linéaire
@@ -200,7 +209,21 @@ void RelayControlNode::cmd_vel_callback(const geometry_msgs::Twist& msg) {
   }
 }
 
-void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
+void RelayControlNode::joy_callback(const actionlib_msgs::GoalStatusArray& msg) {
+  // update joy status
+  if (msg.status_list.size() > 0) {
+    if(msg.status_list[msg.status_list.size()-1].goal_id.stamp != this->latest_stamp)
+    {
+      joy_actif = !joy_actif;
+      this->latest_stamp = msg.status_list[msg.status_list.size()-1].goal_id.stamp;
+    }
+  }
+
+  // update gyro MAE
+  this->recovery_mutex.lock();
+  bool recovery_actif_cp = this->recovery_actif;
+  this->recovery_mutex.unlock();
+
   switch (mat_state) {
     case IDLE_NAV:
       if (joy_actif) {
@@ -208,7 +231,7 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
         write(this->serial, MAT_GREEN_OFF, 1);
         write(this->serial, MAT_ORANGE_ON, 1);
         mat_state = MANUAL;
-      } else if (recovery_actif) {
+      } else if (recovery_actif_cp) {
         ROS_INFO("Recovery active, RED mat turns ON");
         write(this->serial, MAT_GREEN_OFF, 1);
         write(this->serial, MAT_RED_ON, 1);
@@ -217,12 +240,12 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
       break;
     
     case MANUAL:
-      if (!joy_actif && !recovery_actif) {
+      if (!joy_actif && !recovery_actif_cp) {
         ROS_INFO("Joystick inactive, ORANGE mat turns OFF");
         write(this->serial, MAT_ORANGE_OFF, 1);
         write(this->serial, MAT_GREEN_ON, 1);
         mat_state = IDLE_NAV;
-      } else if (!joy_actif && recovery_actif) {
+      } else if (!joy_actif && recovery_actif_cp) {
         ROS_INFO("Recovery active, RED mat turns ON");
         write(this->serial, MAT_ORANGE_OFF, 1);
         write(this->serial, MAT_RED_ON, 1);
@@ -231,7 +254,7 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
       break;
 
     case RECOVERY:
-      if (!recovery_actif) {
+      if (!recovery_actif_cp && !joy_actif) {
         ROS_INFO("Recovery inactive, RED mat turns OFF");
         write(this->serial, MAT_RED_OFF, 1);
         write(this->serial, MAT_GREEN_ON, 1);
@@ -246,23 +269,20 @@ void RelayControlNode::timer_callback(const ros::TimerEvent& event) {
   }
 }
 
-void RelayControlNode::is_joy_actif(const actionlib_msgs::GoalStatusArray& msg) {
-  if (sig_joy == DOWN && msg.status_list.size() > 0) {
-    sig_joy = UP;
-    joy_actif = !joy_actif;
-  } else if (sig_joy == UP && msg.status_list.size() == 0) {
-    sig_joy = DOWN;
-  }
-}
-
-void RelayControlNode::is_recovery_actif(const move_base_msgs::RecoveryStatus& msg) //TODO: change to recoverymessage
-{
-  if (msg.current_recovery_number >= 0) {
-    recovery_actif = true;
+void RelayControlNode::recovery_callback(const move_base_msgs::RecoveryStatus& msg) //TODO: change to recoverymessage
+{ 
+  bool res = false;
+  if (msg.current_recovery_number >= 0) 
+  {
+    res = true;
     }
   else {
-    recovery_actif = false;
+    res = false;
   }
+
+  this->recovery_mutex.lock();
+  this->recovery_actif = res;
+  this->recovery_mutex.unlock();
 }
 
 void sigint_handler(int sig) {

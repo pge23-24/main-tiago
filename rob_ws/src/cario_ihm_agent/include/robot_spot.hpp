@@ -9,6 +9,7 @@
 #include <mutex>
 
 #include "geometry_msgs/Twist.h"
+#include "nav_msgs/Odometry.h"
 #include "actionlib_msgs/GoalStatusArray.h"
 #include "move_base_msgs/RecoveryStatus.h"
 #include "multi_obstacles_tracker_msgs/CameraDetectionStampedArray.h"
@@ -21,7 +22,7 @@ extern int serial;
 #define PORT "/dev/ttyACM0"
 #define BAUDRATE B9600
 
-#define CMD_VEL_TOPIC "/mobile_base_controller/cmd_vel"
+#define CMD_VEL_TOPIC "/mobile_base_controller/odom"
 #define JOY_TOPIC "/joy_priority_action/status"
 #define RECOVERY_TOPIC "/move_base/recovery_status"
 #define CAMERA_TOPIC "/camera_detection_1"
@@ -29,7 +30,7 @@ extern int serial;
 #define SPOT_T_ON 0.25
 #define SPOT_T_OFF 0.25
 #define BUFFER_SIZE 10
-#define HALF_FOV_DEG 60
+#define HALF_FOV_DEG 15
 
 //SPOT = Relay 1
 #define SPOT_ON "\x65"
@@ -56,10 +57,10 @@ enum SigJoy {UP, DOWN};
 class RelayControlNode {
  public:
   RelayControlNode(ros::NodeHandle nh, const char* port, int baudrate);
-  void cmd_vel_callback(const geometry_msgs::Twist& msg);
-  void is_joy_actif(const actionlib_msgs::GoalStatusArray& msg);
-  void is_recovery_actif(const move_base_msgs::RecoveryStatus& msg); //TODO: change the type of the message
-  void timer_callback(const ros::TimerEvent& event);
+  void cmd_vel_callback(const nav_msgs::Odometry& odom);
+  void joy_callback(const actionlib_msgs::GoalStatusArray& msg);
+  void recovery_callback(const move_base_msgs::RecoveryStatus& msg); //TODO: change the type of the message
+  // void timer_callback(const ros::TimerEvent& event);
   void camera_detection_callback(const multi_obstacles_tracker_msgs::CameraDetectionStampedArray& msg);
   void shutdown();
   float compute_mean(float tab[]);
@@ -68,22 +69,27 @@ class RelayControlNode {
 
  private:
   ros::Subscriber sub_cmd_vel, sub_joystick, sub_recovery, sub_camera_detection;
+  // ros::Timer timer;
 
-  // Déclaration du buffer circulaire pour les vitesses linéaires et angulaires
+  // HARDWARE
+  int serial;
+  bool init_success;
+
+  // Déclaration du buffer circulaire pour les vitesses linéaires et angulaires (blue spot)
   float linear_vel_buffer[BUFFER_SIZE];
   float angular_vel_buffer[BUFFER_SIZE];
   int current_index;
   double timerStart;
   std::mutex detection_mutex;
   bool human_in_fov;
-
-  int serial;
   SpotState spot_state = ETEINT;
   BlinkState blink_state = B_ETEINT;
+  
+  // gyrophare
   MatState mat_state = IDLE_NAV;
   SigJoy sig_joy = DOWN;
-
-  bool init_success;
+  ros::Time latest_stamp;
+  std::mutex recovery_mutex;
   bool joy_actif = false;
   bool recovery_actif = false;
 };

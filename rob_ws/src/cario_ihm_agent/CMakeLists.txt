@@ -9,6 +9,7 @@ set(NODE_NAME relay_controller)
 find_package(catkin REQUIRED COMPONENTS 
 roscpp
 geometry_msgs
+nav_msgs
 rospy
 std_msgs
 multi_obstacles_tracker_msgs
