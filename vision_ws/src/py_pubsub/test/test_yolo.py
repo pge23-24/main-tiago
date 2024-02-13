@@ -1,44 +1,76 @@
 import unittest
-from prototyping.src.yolo import yolo
-import cv2  # Assuming OpenCV is used for image handling
-from PIL import Image
-import numpy as np
+from unittest.mock import patch, MagicMock
+from py_pubsub.yolo import YOLOv8Detector, YOLOv5Detector
 
 
-class TestYolo(unittest.TestCase):
-    def setUp(self):
-        """Set up the YOLO instance before each test"""
-        self.yolo_instance = yolo()
+class TestYOLOv8Detector(unittest.TestCase):
+    @patch("py_pubsub.yolo.YOLO")
+    @patch("py_pubsub.yolo.LOGGER")
+    def test_yolov8_init_success(self, mock_logger, mock_yolo):
+        """Test YOLOv8Detector initialization with successful model load."""
+        detector = YOLOv8Detector()
+        mock_yolo.assert_called_with("models/best.pt")
+        mock_logger.error.assert_not_called()
 
-    def test_compute_with_valid_image(self):
-        """Test the compute function with a valid image"""
-        # Load a test image (replace 'path_to_test_image.jpg' with a valid image path)
-        random_image = Image.fromarray(
-            np.random.randint(0, 256, (480, 640, 3), dtype=np.uint8)
+    @patch("py_pubsub.yolo.YOLO")
+    @patch("py_pubsub.yolo.LOGGER")
+    def test_yolov8_init_failure(self, mock_logger, mock_yolo):
+        """Test YOLOv8Detector initialization with failed model load."""
+        mock_yolo.side_effect = Exception("Test exception")
+        detector = YOLOv8Detector()
+        mock_logger.error.assert_called()
+
+    @patch("py_pubsub.yolo.YOLO")
+    def test_compute(self, mock_yolo):
+        """Test computing detections on an image."""
+        mock_model = MagicMock()
+        mock_yolo.return_value = mock_model
+        detector = YOLOv8Detector()
+        mock_image = MagicMock()
+        detector.compute(mock_image)
+        mock_model.track.assert_called_with(
+            mock_image,
+            conf=0.3,
+            persist=True,
+            tracker="bytetrack.yaml",
+            classes=[0, 80],
         )
 
-        # Check if the image is not None
-        self.assertIsNotNone(random_image, "Failed to load test image.")
 
-        # Call the compute method
-        results = self.yolo_instance.compute(random_image)
-
-        # Assert that results are returned
-        self.assertIsNotNone(results, "No results returned from compute method.")
-
-    def test_compute_with_invalid_image(self):
-        """Test the compute function with an invalid image"""
-        invalid_image = None  # Simulate a failed image load
-
-        # Call the compute method
-        results = self.yolo_instance.compute(invalid_image)
-
-        # Assert that no results are returned
-        self.assertIsNone(
-            results, "Results should not be returned for an invalid image."
+class TestYOLOv5Detector(unittest.TestCase):
+    @patch("py_pubsub.yolo.torch.hub.load")
+    @patch("py_pubsub.yolo.YOLO")
+    @patch("py_pubsub.yolo.LOGGER")
+    def test_yolov5_init_success(self, mock_logger, mock_yolo, mock_torch_hub):
+        """Test YOLOv5Detector initialization with successful model load."""
+        mock_torch_hub.return_value = MagicMock()
+        detector = YOLOv5Detector()
+        mock_torch_hub.assert_called_with(
+            "ultralytics/yolov5", "custom", path="models/yolv5l_custom.pt"
         )
+        mock_logger.error.assert_not_called()
+
+    @patch("py_pubsub.yolo.torch.hub.load")
+    @patch("py_pubsub.yolo.YOLO")
+    @patch("py_pubsub.yolo.LOGGER")
+    def test_yolov5_init_failure(self, mock_logger, mock_yolo, mock_torch_hub):
+        """Test YOLOv5Detector initialization with failed model load and fallback."""
+        mock_torch_hub.side_effect = Exception("Test exception")
+        mock_yolo.side_effect = Exception("Fallback exception")
+        detector = YOLOv5Detector()
+        mock_logger.error.assert_called()
+        self.assertIsNone(detector.model)
+
+    @patch("py_pubsub.yolo.torch.hub.load")
+    def test_compute(self, mock_torch_hub):
+        """Test computing detections on an image."""
+        mock_model = MagicMock()
+        mock_torch_hub.return_value = mock_model
+        detector = YOLOv5Detector()
+        mock_image = MagicMock()
+        detector.compute(mock_image)
+        mock_model.assert_called_with(mock_image)
 
 
-# This allows the test to be run from the command line
 if __name__ == "__main__":
     unittest.main()
