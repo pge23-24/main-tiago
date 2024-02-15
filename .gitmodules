@@ -1,0 +1,3 @@
+[submodule "ihm-software-operateur"]
+	path = ihm-software-operateur
+	url = git@github.com:pge23-24/ihm-software-operateur.git
