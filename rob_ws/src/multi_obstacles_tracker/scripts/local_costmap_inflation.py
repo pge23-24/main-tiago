@@ -103,15 +103,15 @@ class LocalCostMapInflation:
             # get covariance matrix components
             a = detection.covariance[0]
             b = detection.covariance[1]
-            c = detection.covariance[2]
+            c = detection.covariance[3]
 
             # a = 1
             # b = 0
             # c = 0
 
             # get minor major axes and theta
-            lambda_1 = 1.5 * np.abs((a + c) / 2 + np.sqrt(((a - c) ** 2) / 4 + b**2))
-            lambda_2 = 1.5 * np.abs((a + c) / 2 - np.sqrt(((a - c) ** 2) / 4 + b**2))
+            lambda_1 = np.abs((a + c) / 2 + np.sqrt(((a - c) ** 2) / 4 + b**2))
+            lambda_2 = np.abs((a + c) / 2 - np.sqrt(((a - c) ** 2) / 4 + b**2))
             theta = 0
             if b == 0 and a >= c:
                 theta = 0
@@ -119,6 +119,8 @@ class LocalCostMapInflation:
                 theta = np.pi / 2
             else:
                 theta = np.arctan2(lambda_1 - a, b)
+
+            theta = -theta
 
             # get center of the ellipse in meter
             ellipse_center = detection.coordinates[0] * np.array(
