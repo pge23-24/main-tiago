@@ -10,4 +10,4 @@ jobs:
           python-version: 3.11
       - name: Install dependencies
         run: pip install -r prototyping/setup/requirements.txt
-      - run: python -m unittest discover -v -s prototyping/test
+      - run: python -m unittest discover -v -s vision_ws/src/py_pubsub/test

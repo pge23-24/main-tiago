@@ -121,3 +121,5 @@ assets
 # Conti Licence and software
 *CES_FWK_Gateway_ecalToRos2/
 *Fwk_licensed/
+# Utils
+*/utils
